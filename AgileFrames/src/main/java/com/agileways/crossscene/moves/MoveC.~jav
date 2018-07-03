@@ -1,0 +1,44 @@
+package com.agileways.crossscene.moves;
+
+import com.agileways.crossscene.manoeuvres.ManoeuvreC;
+import net.agileframes.core.forces.Move;
+import net.agileframes.core.forces.Flag;
+import net.agileframes.core.forces.Sign;
+
+public class MoveC extends Move {
+
+  public MoveC() throws java.rmi.RemoteException {
+    this.manoeuvre = new ManoeuvreC();  // ManoeuvreA has 3 Flags: started, passed and finished
+    this.signs = new Sign[2];
+    this.signs[0] = new Sign();
+    this.finishedSign = new Sign();
+    this.signs[1] = this.finishedSign;
+  }
+
+  public void moveScript(){
+    manoeuvre.startExecution();
+    boolean raised = false;
+    this.watch(manoeuvre.getFlag(0));
+    System.out.println("Move C is started!");
+
+    this.watch(manoeuvre.getFlag(1));
+    System.out.println("Move C is passing by!");
+/**/    try { entryTickets[0].free(); }
+/**/    catch (Exception e) {
+/**/       System.out.println("Exception in MoveC.moveScript(): "+e.getMessage());
+/**/       e.printStackTrace();
+/**/    }
+
+
+    this.watch(manoeuvre.getFlag(2));
+    System.out.println("Move C is finished!");
+    this.signs[0].broadcast();
+    this.signs[1].broadcast();
+    try {
+////      entryTickets[0].free();
+    } catch (Exception e) {
+       System.out.println("Exception in MoveC.moveScript(): "+e.getMessage());
+       e.printStackTrace();
+    }
+  }
+}

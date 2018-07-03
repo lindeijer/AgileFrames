@@ -3,10 +3,13 @@ import java.lang.reflect.Method;
 import net.jini.core.lookup.ServiceID;
 
 /**
-Brief is the base-class for sending signals asynchronously to objects within
-the same agileframes-system.
+<b>Brief is the base-class for sending signals asynchronously to objects within
+the same agileframes-system.</b><p>
 The destination-object is addressed with its unique ServiceID.
 @see SignalOffice
+
+@author   D.G.Lindeijer
+@version  0.1
 
 */
 

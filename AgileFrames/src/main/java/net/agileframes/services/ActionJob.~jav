@@ -1,0 +1,10 @@
+package net.agileframes.services;
+import net.agileframes.core.services.Job;
+import net.agileframes.core.traces.SceneAction;
+import java.io.Serializable;
+
+public class ActionJob extends Job implements Serializable {
+  protected SceneAction action;
+  public ActionJob(SceneAction action) { this.action = action; }
+  public SceneAction getSceneAction() { return action; }
+} 

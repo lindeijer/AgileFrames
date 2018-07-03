@@ -1,0 +1,46 @@
+package com.agileways.crossscene.moves;
+
+import com.agileways.crossscene.manoeuvres.ManoeuvreA;
+import net.agileframes.core.forces.Move;
+import net.agileframes.core.forces.Flag;
+import net.agileframes.core.forces.Sign;
+
+public class MoveA extends Move {
+
+  public MoveA() throws java.rmi.RemoteException {
+    this.manoeuvre = new ManoeuvreA();  // ManoeuvreA has 3 Flags: started, passed and finished
+    this.signs = new Sign[2];
+    this.signs[0] = new Sign();
+    this.finishedSign = new Sign();
+    this.signs[1] = this.finishedSign;
+  }
+
+  public void moveScript(){
+    System.out.println("moveScript of Move A is running");
+    manoeuvre.startExecution();
+    System.out.println("manoeuvre.startExecution() was called");
+
+    this.watch(manoeuvre.getFlag(0)); // startedFlag
+    System.out.println("Move A is started!");
+
+    this.watch(manoeuvre.getFlag(1)); // passedFlag
+    System.out.println("Move A: pastFlag raised!");
+
+/**/    try { entryTickets[0].free(); }
+/**/    catch (Exception e) {
+/**/       System.out.println("Exception in MoveA.moveScript(): "+e.getMessage());
+/**/       e.printStackTrace();
+/**/    }
+
+    this.signs[0].broadcast();
+
+    this.watch(manoeuvre.getFlag(2));// finishedFlag
+    System.out.println("Move A is finished!");
+    this.signs[1].broadcast();
+////    try { entryTickets[0].free(); }
+////    catch (Exception e) {
+////       System.out.println("Exception in MoveA.moveScript(): "+e.getMessage());
+////       e.printStackTrace();
+////    }
+  }
+}

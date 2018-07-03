@@ -1,0 +1,20 @@
+package net.agileframes.forces.flags;
+
+import net.agileframes.core.forces.Flag;
+import net.agileframes.core.forces.Manoeuvre;
+
+public class ToDoFlag extends Flag {
+  private double toDoLength = Double.NaN;
+  public ToDoFlag(Manoeuvre manoeuvre, double toDoLength) {
+    this.toDoLength = toDoLength;
+    this.manoeuvre = manoeuvre;
+  }
+  public void evaluate() {
+    if (manoeuvre.getTrajectory().getEvolutionEnd() - manoeuvre.getCalcEvolution() <= toDoLength) { raise(); }
+  }
+  protected void copyAllFields(Flag flag) {
+    this.toDoLength = ((ToDoFlag)flag).toDoLength;
+  }
+}
+
+

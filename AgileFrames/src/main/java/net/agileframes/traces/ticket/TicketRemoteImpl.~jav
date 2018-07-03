@@ -1,0 +1,60 @@
+package net.agileframes.traces.ticket;
+import net.agileframes.core.traces.Ticket;
+import java.rmi.server.UnicastRemoteObject;
+import com.objectspace.jgl.Array;
+
+public class TicketRemoteImpl implements TicketRemote {
+  private Ticket ticket = null;
+  public TicketRemoteImpl(Ticket ticket) {
+    this.ticket = ticket;
+    try { UnicastRemoteObject.exportObject(this); }
+    catch (Exception e) { e.printStackTrace();  }
+  }
+  // setAssigned is called by setAssigned() in the serialized version of PrimeTicket. The call to this
+  // method is forwarded to the server. At the server this method calls the original version of
+  // PrimeTicket with setAssignedByPTR()
+  public synchronized void setAssigned(Ticket t,int i) throws java.rmi.RemoteException {
+    System.out.println("setAssigned in TR called");
+    ticket.setAssignedByTR(t, i);
+  }
+
+  public Ticket getTicket() throws java.rmi.RemoteException {
+    return ticket;
+  }
+
+  // callback-structure: when a ticket that is member of a setTicket is assigned,
+  // it should call its setTicket
+  private Array callback_list = new Array();
+  private class ZZZ implements java.io.Serializable {
+    public Ticket super_ticket;
+    int index;
+    public ZZZ() {}
+    public ZZZ(Ticket super_ticket,int i) {
+      this.super_ticket = super_ticket;
+      this.index = i;
+    }
+  }
+  public void remember(Ticket super_ticket,int i) {
+    ZZZ zzz = new ZZZ(super_ticket,i);
+    System.out.println("## Remember, zzz = "+zzz.toString()+ " superticket = "+zzz.super_ticket.toString()+"  i="+i+"  this ="+this.toString());
+    callback_list.pushBack(zzz);
+  }
+  public void callback() {
+    System.out.println("## TicketImplBase  "+toString()+".callback()");
+    ZZZ zzz = null;
+    while (!callback_list.isEmpty()) {
+      zzz = (ZZZ) callback_list.popFront();
+      try {
+        System.out.println("## CallBack, zzz = "+zzz.toString()+ " superticket = "+zzz.super_ticket.toString());
+        zzz.super_ticket.setAssigned(getTicket(),zzz.index);
+      }
+      catch (java.rmi.RemoteException re) {
+        System.out.println(toString() +
+        " got a RemoteException on a super-ticket during assign(). ");
+        re.printStackTrace();
+        System.exit(1);
+      }
+    }
+  }
+
+}

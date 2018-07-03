@@ -1,0 +1,11 @@
+package net.agileframes.core.forces;
+import net.agileframes.forces.mfd.ManoeuvreDriver;
+import java.rmi.RemoteException;
+
+public interface Machine extends java.io.Serializable {
+  public Properties getProperties() throws RemoteException;
+  public ManoeuvreDriver getManoeuvreDriver() throws RemoteException;
+  public int getMachineNumber() throws RemoteException;
+  //--------------------------- Inner-interface ---------------------
+  public interface Properties {}
+}

@@ -1,0 +1,134 @@
+package net.agileframes.core.forces;
+import net.agileframes.core.forces.FuSpace$FuPath;
+import net.agileframes.core.forces.FuSpace;
+import net.agileframes.core.forces.Flag;
+import net.agileframes.core.forces.Precaution;
+import net.agileframes.core.forces.FuTrajectory;
+import net.agileframes.server.AgileSystem;
+import java.io.Serializable;
+
+public class Manoeuvre implements Cloneable, Serializable {
+  //----------------- Attributes -------------------------
+  protected FuTrajectory trajectory = null;
+  protected Flag[] flags;
+  protected Precaution[] precautions;
+
+  protected double maxSpeed = Double.NaN;
+  protected double maxDeceleration = Double.NaN;
+  protected double maxAcceleration = Double.NaN;
+  protected double maxDeviation = Double.NaN;
+  protected double cycleTime = Double.NaN;
+
+  protected static double projectionErrorMargin = 0.1; // where to declare ?
+  private double speedMultiplier = 0;
+
+  private double calcEvolution = 0;
+  private double calcDeviation = 0;
+  private double calcSpeed = 0;
+  private long updatingTime;
+  private double pilotEvolution = Double.NaN;
+  private FuPath pilotCourse = null;
+  private double pilotSpeed = Double.NaN;
+  private double refAcceleration = Double.NaN;
+
+  private double prevCalcEvolution = 0;
+  private double prevCalcSpeed = 0;
+  private long prevUpdatingTime;
+
+  //------------------ Methods -----------------------------
+  public void updateCalculatedState(FuSpace obsState, double obsEvolution){
+    prevUpdatingTime = updatingTime;
+    prevCalcEvolution = calcEvolution;
+    prevCalcSpeed = calcSpeed;
+    updatingTime = AgileSystem.getTime();
+    double dT = ((double)(updatingTime - prevUpdatingTime))/1000;// in seconds
+
+    if ((obsState != null) && (dT > 0)) {
+      calcEvolution = getProjection(obsState, obsEvolution, projectionErrorMargin);
+      double pilotAlpha = trajectory.getPilotAlpha(calcEvolution);
+      double pilotBeta = trajectory.getPilotBeta(calcEvolution);
+      double speedGamma = trajectory.getSpeedGamma(calcEvolution);
+      double speedMu = trajectory.getSpeedMu(calcEvolution);
+      calcDeviation = obsState.stateDistance( trajectory.getTrajectPoint(calcEvolution) );
+      calcSpeed =  speedGamma * (calcEvolution - prevCalcEvolution) / dT + (1 - speedGamma) * prevCalcSpeed;
+      pilotEvolution = calcEvolution + pilotAlpha + calcDeviation * pilotBeta;
+      FuSpace pilotState = trajectory.getTrajectPoint(pilotEvolution);
+      pilotCourse = obsState.createPath(pilotState);
+      pilotSpeed = speedMultiplier * maxSpeed * (
+                   speedMu *       trajectory.getProfileSpeed(calcEvolution) +
+                   (1 - speedMu) * trajectory.getProfileSpeed(pilotEvolution) );
+      for (int i = 0; i < flags.length; i++) { flags[i].evaluate(); }
+      refAcceleration = (pilotSpeed - calcSpeed) / cycleTime;// formula: a = (vt - v0) / t
+      for (int i = 0; i < precautions.length; i++) {
+        if ( (precautions[i].getDeceleration() != 0) && (refAcceleration > - maxDeceleration * precautions[i].getDeceleration()) ) {
+          refAcceleration = - maxDeceleration * precautions[i].getDeceleration();
+        }
+      }
+      if (refAcceleration >  maxAcceleration) { refAcceleration =  maxAcceleration; }
+      if (refAcceleration < -maxDeceleration) { refAcceleration = -maxDeceleration; }
+    }
+  }
+
+  public double getProjection(FuSpace obsState, double obsEvolution, double errorMargin) {
+    double minEvolution = prevCalcEvolution;
+    FuSpace minState = trajectory.getTrajectPoint(minEvolution);
+    double dU = obsState.evolutionDistance(minState);
+    if (prevCalcEvolution >= obsEvolution) { dU = 0; }
+    FuSpace maxState = trajectory.getTrajectPoint(minEvolution + dU);
+    double distanceToMaxState = Math.pow(obsState.stateDistance(maxState), 2) + Math.pow(minEvolution + dU - obsEvolution, 2);
+    double distanceToMinState = Math.pow(obsState.stateDistance(minState), 2) + Math.pow(minEvolution - obsEvolution, 2);
+    while (dU > errorMargin) {
+      dU = dU/2;
+      if (distanceToMinState < distanceToMaxState) {
+        maxState = trajectory.getTrajectPoint(minEvolution + dU);
+        distanceToMaxState = Math.pow(obsState.stateDistance(maxState), 2) + Math.pow(minEvolution + dU - obsEvolution, 2);
+      } else {
+        minEvolution += dU;
+        minState = trajectory.getTrajectPoint(minEvolution);
+        distanceToMinState = Math.pow(obsState.stateDistance(minState), 2) + Math.pow(minEvolution - obsEvolution, 2);
+    } }
+    return minEvolution + dU/2;
+  }
+
+  public Object clone() throws CloneNotSupportedException {
+    Manoeuvre clone = (Manoeuvre)super.clone();
+    clone.trajectory = (FuTrajectory)trajectory.clone();
+    clone.flags = new Flag[flags.length];
+    for (int i = 0; i < flags.length; i++) { clone.flags[i] = (Flag)flags[i].clone(clone); }
+    clone.precautions = new Precaution[precautions.length];
+    for (int i = 0; i < precautions.length; i++) {  clone.precautions[i] = (Precaution)precautions[i].clone();  }
+    return clone;
+  }
+
+  // info from previous Manoeuvre is needed, to perform all calculations
+  public void setPrevManoeuvre(Manoeuvre manoeuvre) {
+    if (manoeuvre == null) { return; }
+    //calcEvolution = manoeuvre.getCalcEvolution();
+    calcSpeed = manoeuvre.getCalcSpeed();
+    updatingTime = manoeuvre.getLastUpdatingTime();
+  }
+
+  //---------------------- 'User Commands' ----------------------------
+  private boolean started = false;
+  private boolean interrupted = false;
+  private double lastSpeedMultiplier;
+  private boolean canceled = false;
+  public void startExecution() {  if (!started) { speedMultiplier = 1;  started = true; } }
+  public void adaptSpeed(double rate) { if ((rate >= 0) && (rate <= 1) && (started) && (!interrupted) && (!canceled)) { speedMultiplier = rate; } }
+  public void interruptExecution() { if ((started) && (!canceled)) { interrupted = true; lastSpeedMultiplier = speedMultiplier; speedMultiplier = 0; } }
+  public void resumeExecution() { if ((interrupted) && (!canceled)) { speedMultiplier = lastSpeedMultiplier; interrupted = false; } }
+  public void cancelExecution() { if (started) { canceled = true; speedMultiplier = 0; } }
+
+  //------------------- Getters and Setters ------------------------
+  public double getCalcEvolution() { return calcEvolution; }
+  public double getCalcDeviation() { return calcDeviation; }
+  public double getCalcSpeed() { return calcSpeed; }
+  public long getLastUpdatingTime() { return updatingTime; }
+  public double getPilotEvolution() { return pilotEvolution; }
+  public FuPath getPilotCourse() { return pilotCourse; }
+  public double getPilotSpeed() { return pilotSpeed; }
+  public double getReferenceAcceleration() { return refAcceleration; }
+  public Flag getFlag(int index) { return flags[index]; }
+  public Precaution getPrecaution(int index) { return precautions[index]; }
+  public FuTrajectory getTrajectory() { return trajectory; }// to be able to draw in Virtuality
+}

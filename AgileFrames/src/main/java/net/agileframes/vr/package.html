@@ -1,0 +1,29 @@
+<html>
+
+<head>
+<title>VR</title>
+</head>
+
+<body>
+
+<p>Provides all essential classes needed to visualize objects. </p>
+
+<p>In our simulation model, every entity is split in to two parts. An implementation of
+Body which does all the actual calculating. And an implementation of Avatar
+that is displayed in the virtuality. Both object should be connected if the Avatar is
+to display the actual state of the Body.</p>
+
+<p>Avatars may be created in many different ways. If the Avatar is created by a special
+modeling program, like pro-engineer, the (vrml) output can be translated into a usable
+format by VrmlAvatarFactory.</p>
+
+<p>The (periodic) update of the Avatar is provided by a behavior object called
+RefreshBehavior. This object causes the Avatar to ask the Body every user-defined amount
+of time what the new Position and Orientation is.</p>
+<p><b>Space 3d</b><br>
+The virtuality refered to above is created by the interface Virtuality.
+AgileFrames provides a basic implementation of Virtuality in a 3D environment.
+The Virtuality3D sets up a frame with a Java 3D canvas and some keytriggers to
+permit movement in the 3D screen. Avatars may be added and deleted at runtime.</p>
+</body>
+</html>

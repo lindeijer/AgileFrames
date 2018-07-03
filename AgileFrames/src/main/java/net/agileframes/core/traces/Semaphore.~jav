@@ -1,0 +1,644 @@
+package net.agileframes.core.traces;
+
+import net.agileframes.core.traces.ReserveDeniedException;
+import net.agileframes.traces.SceneIB;
+import net.agileframes.traces.ticket.PrimeTicket;
+import net.agileframes.traces.ticket.TicketImplBase;
+import net.agileframes.traces.Discipline;
+
+import net.jini.core.transaction.Transaction;
+import net.jini.core.transaction.server.TransactionParticipant;
+import net.jini.core.transaction.server.ServerTransaction;
+import net.jini.core.transaction.UnknownTransactionException;
+import net.jini.core.transaction.CannotJoinException;
+import net.jini.core.transaction.server.CrashCountException;
+import net.jini.core.transaction.server.TransactionManager;
+import java.rmi.RemoteException;
+import com.objectspace.jgl.Array;
+// actually, code should be re-written wrt arrays; it is better to make home-made arrays
+// instead of these jgl-objects, because we don't want to import & install this object.
+import java.rmi.server.UnicastRemoteObject;
+
+//import com.agileways.traces.scene.SemaphoreViewer;
+
+/**
+The semaphore possessess a thread that assignes the prime-tickets
+All methods are synchronized.
+Construction procedure is the same as for basic actions.
+*/
+
+public class Semaphore extends UnicastRemoteObject
+    implements TransactionParticipant, SemaphoreRemote {
+
+  /**
+   * creates a semaphore with a maximum capacity of 1.
+   *
+   */
+  public Semaphore(String name) throws RemoteException {
+    this(name,1,new Discipline());
+  }
+
+  public Semaphore(String name,int max_capacity) throws RemoteException {
+    this(name,max_capacity,new Discipline());
+  }
+
+  public Semaphore(String name,int max_capacity,Discipline discipline) throws RemoteException {
+    this.name = name;
+    this.max_capacity = max_capacity;
+    this.capacity = max_capacity;
+    this.setDiscipline(discipline);
+
+    /*Thread assignThread = new Thread("assignThread") {
+      public void run() { runForAssignThread(); }
+    };
+    assignThread.start();*/
+  }
+
+  Object object = new Object();
+
+  /**
+  Transaction State: ACTIVE(1),VOTING,PREPARED,NOTCHANGED,COMMITTED,ABORTED(6)
+  @see TransactionConstants
+  */
+  private int state = COMMITTED;
+  private void setState(int s) {
+    if (s!=state) {
+      state = s;
+      model_changed();
+    }
+  }
+  public int getState() { return state; }
+  private boolean isState(int s) { return (s==state); }
+
+  ////////////////////////////////////////////////////////////////////////
+
+  private ServerTransaction server_transaction = null;
+
+  private void setServerTransaction(ServerTransaction stx)
+      throws ReserveDeniedException {
+    //if (stx != null) System.out.println("setServerTransaction("+stx.toString()+")");
+    //else System.out.println("setServerTransaction(null)");
+
+    if (stx == null) { server_transaction = null; return; }
+    if (server_transaction == null) {
+      server_transaction = stx;
+      try {
+        server_transaction.join(this,0); // we don't crash.
+        setState(ACTIVE);
+        //System.out.println(getName()+" joined, is active under "+server_transaction.id+" toString="+server_transaction.toString());
+      }
+      catch (UnknownTransactionException e) {
+        System.out.println(toString() +
+        " join failed: " + e.toString() + " " + server_transaction.id);
+        System.exit(1);
+        throw new ReserveDeniedException("UnknownTransactionException");
+
+      }
+      catch (CannotJoinException e) {
+        System.out.println(toString() +
+        " join failed: " + e.toString() + " " + server_transaction.id);
+        System.exit(1);
+        throw new ReserveDeniedException("CannotJoinException");
+      }
+      catch (CrashCountException e) {
+        System.out.println(toString() +
+        " join failed: " + e.toString() + " " + server_transaction.id);
+        System.exit(1);
+        throw new ReserveDeniedException("CrashCountException");
+      }
+      catch (RemoteException e) {
+        System.out.println(toString() +
+        " join failed: " + e.toString() + " " + server_transaction.id);
+        System.exit(1);
+        throw new ReserveDeniedException("RemoteException");
+      }
+    }
+    else {
+      if (stx.id != server_transaction.id) {
+        //System.out.println(getName() + " already reserving under transaction: " + server_transaction.id);
+        throw new ReserveDeniedException("denied: " + stx.id);
+      }
+    }
+  }
+
+  /**
+  The semaphores name within the scene.
+  */
+  private String name = null;
+
+  public String getName() { return this.name; }
+
+  public String toString() {
+    String string = getClass().toString() + " " + getName();
+    if (scene != null) { string += " in scene " + scene.toString(); }
+    return string;
+  }
+
+
+  /**
+  The scene the semaphore belongs to.
+  */
+  private SceneIB scene = null;
+  public SceneIB getScene() { return scene; }
+
+  /**
+  The semaphores maximum capacity.
+  */
+  private int max_capacity = 0;
+  public int getMaxCapacity() { return max_capacity; }
+
+  /**
+  The semaphores current available capacity.
+  This value must be less or equal to the maximum capacity.
+  */
+  private int capacity = 0;
+  public int getCapacity() { return capacity; }
+  private void setCapacity(int c) {
+    capacity = c;
+    model_changed();
+    // System.out.println(getIdentity() + " capacity is: " + capacity);
+  }
+
+  /**
+  The semaphores discipline decides which reserving prime-ticket to honor
+  its capacity when capacity is repossessed.
+  */
+  private Discipline discipline = null;
+  public Discipline getDiscipline() { return discipline; }
+  public void setDiscipline(Discipline discipline) {
+    if (discipline == null) { this.discipline = new Discipline(); }
+    else { this.discipline = discipline; }
+    this.discipline.semaphore = this;
+    this.discipline.reserved_list = this.reserved_list;
+  }
+
+  /**
+  Prime-tickets are appended to this list when their claim is honored.
+  */
+  private Array assigned_list = new Array();
+  public int getAssignedListLength() {
+    return assigned_list.size();
+  }
+
+  /**
+  Prime-tickets are appended to this list when they start reserving.
+  There order in the list corresponds with their arrival time.
+  The reserve-pending-pending list is added to this list upon commit().
+  */
+  private Array reserved_list = new Array();
+  public int getReservedListLength() {
+    return reserved_list.size();
+  }
+
+  /**
+  Prime-tickets are moved to this list from the reserve-pending-pending list
+  when the semaphore votes PREPARED. At that time their time-stamp is set.
+  */
+  private Array reserve_pending_list = new Array();
+  public int getReservePendingListLength() {
+    return reserve_pending_list.size();
+  }
+
+////////////// ATTEMPT //////////////////////////////////////////////////////
+
+  /**
+  The prime-tickets claim is honored iff there is enough available capacity.
+  It ignores possible transaction that are going on.
+  @return true iff the claim is honored.
+  */
+  public synchronized boolean attempt(PrimeTicket prime_ticket) throws RemoteException {
+    //System.out.println("attempt("+prime_ticket.toString()+")");
+    if (assigned_list.contains(prime_ticket)) {
+      //System.out.println("Semaphore " + getName() +
+      //  " multiple attempt by assigned ticket " + prime_ticket.toString());
+      return true;
+    }
+    if (reserved_list.contains(prime_ticket)) {
+      //System.out.println("Semaphore " + getName() +
+      //  " multiple attempt by impaitent ticket " + prime_ticket.toString());
+      return false;
+    }
+    if (prime_ticket.claim <= capacity) {
+      setCapacity(capacity - prime_ticket.claim);
+      assigned_list.add(prime_ticket);
+      //System.out.println("Semaphore " + getName() +
+      //  " honored " + prime_ticket.toString() + "'s claim immediately");
+      return true;
+    }
+    else return false;
+  }
+
+////ABORT////////////////////////////
+
+/**
+ * For the time being NOT alid in context of transactions
+ */
+  public synchronized void abort(PrimeTicket prime_ticket) throws RemoteException {
+    //System.out.println("abort("+prime_ticket.toString()+")");
+    int i = this.reserved_list.count(prime_ticket);
+    if (i > 1) {
+      //System.out.println("Semaphore " + getName() +
+      //  " crashed due to multiple occurrence of " + prime_ticket.toString() +
+      //  " in the assigned list during abort.");
+      System.exit(1);
+    }
+    if (i == 0) {
+      //System.out.println("Semaphore " + getName() +
+      //  " unwarrented abort by " + prime_ticket.toString());
+      return;
+    }
+    //System.out.println("Semaphore " + getName() + " aborted");
+    reserved_list.remove(prime_ticket);
+    try { this.free(prime_ticket); }
+    catch (RemoteException e) { System.out.println("RemoteException in Semaphore.abort --> we quit"); e.printStackTrace(); System.exit(0); }
+  }
+
+////////////// FREE ////////////////////////////////////////////////////////
+
+  /**
+  The prime-tickets claim is repossessed.
+  */
+  public synchronized void free(PrimeTicket prime_ticket) throws RemoteException {
+    System.out.println("Semaphore: "+getName()+"  free("+prime_ticket.toString()+")");
+    int i = assigned_list.count(prime_ticket);
+    if (i > 1) {
+      System.out.println("Semaphore " + getName() +
+        " crashed due to multiple occurrence of " + prime_ticket.toString() +
+        " in the assigned list.");
+      System.exit(1);
+    }
+    if (i == 0) {
+      System.out.println("Semaphore " + getName() +
+        " unwarrented free by " + prime_ticket.toString());
+      return;
+    }
+    System.out.println("Semaphore " + getName() +
+      " repossessed claim of " + prime_ticket.toString());
+    assigned_list.remove(prime_ticket);
+    setCapacity(capacity + prime_ticket.claim);
+    //this.notify();
+    assign();
+  }
+
+////////////// SNIP /////////////////////////////////////////////////////////
+
+  public synchronized int snip(PrimeTicket prime_ticket) throws RemoteException {
+    //System.out.println("snip("+prime_ticket.toString()+")");
+    if (assigned_list.contains(prime_ticket)) {
+      return TicketImplBase.ASSIGNED;
+    }
+    if (reserved_list.contains(prime_ticket)) {
+      return TicketImplBase.RESERVING;
+    }
+    return TicketImplBase.INITIAL;
+  }
+
+////////////// RESERVE ///////////////////////////////////////////////////////
+
+  /**
+  The prime-tickets claim is honored when there is enough available capacity.
+  If the semaphore is "under transaction" the reserve may continue because
+  the call is assumed to have been called by a prime-ticket on its own right.
+  by the actor-thread, it not a danger for deadlocking! The point is that
+  parallel reserves may deadlock. Note that with this implementation collect
+  tickets suddenly becones very relevant when claiming sequences. If not
+  everybody follows the same sequence then ........
+  @return true iff the claim is honored during this all.
+  */
+  public synchronized boolean reserve(PrimeTicket prime_ticket) throws RemoteException {
+    //System.out.println("reserve("+prime_ticket.toString()+")");
+    if (server_transaction != null) {
+      //System.out.println("Semaphore " + getName() +
+      //  " reserved ticket " + prime_ticket.toString() +
+      //  " ignoring the danger of deadlock.");
+    }
+    if (assigned_list.contains(prime_ticket)) {
+      //System.out.println("Semaphore " + getName() +
+      //" multiple reserve by assigned ticket " + prime_ticket.toString());
+      return true;
+    }
+    if (reserved_list.contains(prime_ticket)) {
+      //System.out.println("Semaphore " + getName() +
+      //" multiple reserve by reserving ticket " + prime_ticket.toString());
+      return false;
+    }
+    if (prime_ticket.claim <= capacity) {
+      setCapacity(capacity - prime_ticket.claim);
+      assigned_list.add(prime_ticket);
+      //System.out.println("Semaphore " + getName() +
+      //  " honored claim by " + prime_ticket.toString());
+      return true;
+    }
+    else {
+      reserved_list.add(prime_ticket);
+      //System.out.println("Semaphore " + getName() +
+      //  " reserved claim by " + prime_ticket.toString());
+      model_changed();
+      return false;
+    }
+  }
+
+///////////////////// RESERVE(TRANSACTION) ////////////////////////////////////
+
+  /**
+  After this a normal reserve is called also iff not aborted,
+  unless the primeticket is assigned in the mean time.
+  @exception ReserveDeniedException
+  */
+  public synchronized void reserve(Transaction tx,PrimeTicket prime_ticket)
+      throws ReserveDeniedException, RemoteException {
+    //System.out.println("reserve("+tx.toString()+", "+prime_ticket.toString()+")");
+    switch (state) {
+      case NOTCHANGED: { /* a new transaction */ }
+        // the previous transaction left the semaphore behind in state NOTCHANGED
+        // this reserve-transaction may proceed, do not break, follow through to case active
+      case COMMITTED:  { /* a new transaction */ }
+        // the previous transaction left the semaphore behind in state COMMITTED
+        // this reserve-transaction may proceed, do not break, follow through to case active
+      case ABORTED:    { setServerTransaction(null); }
+        // this is not a new transaction ?????
+        // the previous transaction left the semaphore behind in state ABORTED
+        // this reserve-transaction may proceed, do not break, follow through to case active
+      case ACTIVE: {
+        //System.out.println("semaphore case is ACTIVE");
+        // the previous transaction left the semaphore behind in state ACTIVE ???? ignore for now
+        // I do not think this should be the case, but it does happen.
+        // this reserve-transaction may proceed, do not break, follow through to case active
+        //System.out.println("semaphore state before setServerTransaction =" + this.state + "1=ACTIVE;2=VOTING;3=PREPARED;4=NOTCHANGED;5=COMITTED;6=ABORTED");
+        //if ((prime_ticket != null) && (prime_ticket.ticketRemote != null) ) System.out.println("reserve called by "+prime_ticket.toString()+"  ticketRemote="+prime_ticket.ticketRemote.toString());
+        setServerTransaction((ServerTransaction)tx);
+        // state has been set to active
+        if (reserve_pending_list.count(prime_ticket) == 0) {
+          reserve_pending_list.add(prime_ticket);
+          //System.out.println("reserve_pending_list added "+ prime_ticket.toString());
+        }
+        //System.out.println("Semaphore " + getName() +
+        //" reserve-pended under transaction " + server_transaction.id);
+        break;
+      }
+      case VOTING: { throw new ReserveDeniedException(toString() +
+        " was VOTING for another transaction: " + server_transaction.id);
+      }
+      case PREPARED: { throw new ReserveDeniedException(toString() +
+        " was PREPARED for another transaction: " + server_transaction.id);
+      }
+    }
+  }
+
+/////////// IMPLEMENTATION OF TransactionParticipant /////////////////////
+
+  public synchronized int prepare(TransactionManager tx,long id)
+      throws UnknownTransactionException {
+    //System.out.println(getName() + " is preparing transaction, state = "+state);
+    if (server_transaction.id != id) {
+      System.out.println(getName() +
+        " not prepared: UnknownTransactionException");
+      throw new UnknownTransactionException();
+    }
+    switch (state) {
+      case ACTIVE: { setState(VOTING);      // no break: flowing through
+      //System.out.println(getIdentity() + " voting");
+      }
+      case VOTING:{ setState(PREPARED);
+        //System.out.println(getIdentity() + " prepared.");
+        break;
+      }
+      case PREPARED: {
+        //System.out.println(toString() + " prepared again: PREPARED");
+        break;
+      }
+      case NOTCHANGED: {
+        //System.out.println(toString() + " prepared again: NOTCHANGED ");
+        break;
+      }
+      case COMMITTED: {
+        //System.out.println(toString() + " prepared again: COMMITTED ");
+        break;
+      }
+      case ABORTED: {
+        //System.out.println(toString() + " prepared again: ABORTED ");
+        break;
+      }
+    }
+    return state;
+  }
+
+  public synchronized void commit(TransactionManager tx,long id)
+      throws UnknownTransactionException {
+    //System.out.println(getName() + " is commiting transaction, state = "+state);
+    if (server_transaction.id != id) {
+      System.out.println(toString() +
+        " not committed: UnknownTransactionException");
+      throw new UnknownTransactionException();
+    }
+    switch (state) {
+      case ACTIVE: { System.out.println(toString() +
+        " not committed: commit before prepare" + id);
+        System.exit(1);
+      }
+      case VOTING:{ System.out.println(toString() +
+        " not committed: commit during prepare" + id);
+        System.exit(1);
+      }
+      case PREPARED: {
+        // System.out.println(getIdentity() + " committed. " + id);
+        break;
+      }
+      case NOTCHANGED: {
+        //System.out.println(toString() + " committed again to NOTCHANGED " + id);
+        System.exit(1);
+        break;
+      }
+      case COMMITTED: {
+        //System.out.println(toString() + " committed again to COMMITTED " + id);
+        System.exit(1);
+        break;
+      }
+      case ABORTED: {
+        //System.out.println(toString() + " committed again to ABORTED " + id);
+        System.exit(1);
+        break;
+      }
+    }
+    while(!reserve_pending_list.isEmpty()) {
+      reserved_list.pushBack(reserve_pending_list.popFront());
+    }
+    setState(COMMITTED);
+    // System.out.println("resevrved list: " + reserved_list.toString());
+    assign();
+    //this.notify();
+  }
+
+  public synchronized void abort(TransactionManager tx,long id)
+      throws UnknownTransactionException, RemoteException {
+    //System.out.println(getName() + " is aborting transaction, state = "+state);
+    if (server_transaction.id != id) {
+      //System.out.println(
+      //  "semaphore not aborted: UnknownTransactionException");
+      throw new UnknownTransactionException();
+    }
+    switch (state) {
+      case ACTIVE:    {
+        //System.out.println(toString() +" aborted (before prepare) " + id);
+        break;
+      }
+      case VOTING:    {
+        //System.out.println(toString() +
+        //" aborted (during prepare) " + id);
+        break;
+      }
+      case PREPARED:  {
+        //System.out.println(toString() + " aborted " + id);
+        break;
+      }
+      case NOTCHANGED:{ System.out.println(toString() +
+        " aborted WARNING: abort whilst NOTCHANGED voted!! " + id);
+        System.exit(1);
+        break;
+      }
+      case COMMITTED: { System.out.println(toString() +
+        " abort ignored: WARNING: abort after commit!! " + id);
+        System.exit(1);
+        break;
+      }
+      case ABORTED:   { System.out.println(toString() + " aborted again" + id);
+        System.exit(1);
+        break;
+      }
+    }
+    while(!reserve_pending_list.isEmpty()) { reserve_pending_list.popFront(); }
+    setState(ABORTED);
+    assign();
+    //this.notify();
+  }
+
+  public synchronized int prepareAndCommit(TransactionManager tx,long id)
+      throws UnknownTransactionException, RemoteException {
+    //System.out.println(getName() + " is prep&com transaction, state = "+state);
+    if (server_transaction.id != id) {
+      //System.out.println("semaphore not prepareAndCommit" + id +
+      //" " + server_transaction.id);
+      throw new UnknownTransactionException();
+    }
+    switch (state) {
+      case ACTIVE: { //System.out.println(toString() +
+        //" prepareAndCommit, now voting." + id);
+        setState(VOTING);
+      }
+      case VOTING: { //System.out.println(toString() +
+        //" prepareAndCommit, now prepared." + id);
+        setState(PREPARED);
+      }
+      case PREPARED: { //System.out.println(toString() +
+        //" prepareAndCommit, now committing." + id);
+        break;
+      }
+      case COMMITTED: { //System.out.println(toString() +
+        //" prepareAndCommit after commit." + id);
+        break;
+      }
+      case NOTCHANGED: { //System.out.println(toString() +
+        //" prepareAndCommit after NOTCHANGED voted" + id);
+        break;
+      }
+      case ABORTED: { //System.out.println(toString() +
+        //" prepareAndCommit after ABORTED" + id);
+        break;
+      }
+    }
+    while(!reserve_pending_list.isEmpty()) {
+      reserved_list.pushBack(reserve_pending_list.popFront());
+    }
+    setState(COMMITTED);
+    assign();
+    //this.notify();
+    return state;
+  }
+
+
+//////// implementation of prime-ticket assignment ///////////////////////////
+
+  /**
+  Calls the discipline to do some assigning. Always called by free().
+  If so then commit or abort does the call
+  */
+  private synchronized void assign() {
+    //System.out.println("assign()");
+    switch (state) {
+      case ACTIVE: {}
+      case VOTING: {}
+      case PREPARED: {
+        //System.out.println("assign() postponed due to transaction");
+        return;
+      }
+    }
+    PrimeTicket pt = discipline.select();
+    int counter = 0;
+    while (pt != null) {
+      assign(pt);
+      pt = discipline.select();
+      counter++;
+    }
+    //System.out.println("DISCIPLIUNE ASSIGNED ::::::: " + counter);
+  }
+
+  /*
+  Does the actual assigning
+  */
+  private synchronized void assign(PrimeTicket pt) {
+    //System.out.println("Semaphore.assign(pt) called");
+    int i = reserved_list.count(pt);
+    if (i > 1) {
+      System.out.println(pt.toString() + " multiply in reserved list");
+      System.exit(1);
+    }
+    if (i == 0) {
+      System.out.println(pt.toString() + " not in reserved list");
+      System.exit(1);
+    }
+    if (capacity >= pt.threshold) {
+      setCapacity(capacity - pt.claim);
+      reserved_list.popFront();
+      assigned_list.add(pt);
+      try { pt.setAssigned(); }
+      catch(Exception e) { e.printStackTrace(); }
+      //System.out.println(pt.toString() + " claim honored");
+    }
+    else {
+      //System.out.println(pt.toString() + " not assigned: too large threshold");
+    }
+  }
+
+  ////////////////////////////////////////////
+//  private SemaphoreViewer semaphoreViewer = null;
+//  public void setViewer (SemaphoreViewer semaphoreViewer) {
+//    this.semaphoreViewer = semaphoreViewer;
+//  }
+
+
+  // assigns when the semaphore is notified
+  // the semaphore will work without using this extra thread (by calling assign()
+  // at places where now this.notify() is called), but in a remote context the
+  // use of this extra thread is preferred.
+/*  private boolean notified = false;
+  private synchronized void runForAssignThread() {
+    for(;;) {
+      if (!notified ) {
+        try { wait(); }
+        catch(Exception e) { e.printStackTrace(); }
+      }
+      notified = false;
+      assign();
+    }
+  }*/
+
+  private void model_changed() {
+//    if (semaphoreViewer!=null) {this.semaphoreViewer.modelChanged();}
+  }
+
+  public PrimeTicket createPrimeTicket(SceneAction sa, int claim) {
+    return new PrimeTicket(getName()+"_PT", sa, this, claim, 0);
+  }
+}
+
+

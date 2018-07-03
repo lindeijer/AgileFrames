@@ -1,0 +1,32 @@
+package net.agileframes.core.vr;
+
+import net.agileframes.core.vr.AvatarFactory;
+import com.agileways.forces.machine.agv.avatar.AvatarAGV;
+
+
+public class AgvAvatarFactory extends AvatarFactory {
+  public String text;
+  public Integer appearance;
+
+  public AgvAvatarFactory(){}
+
+  public AgvAvatarFactory(int agvNr) {
+    this.appearance = Integer.getInteger("", Math.abs(agvNr));
+    this.text = String.valueOf(agvNr);
+  }
+
+  public Avatar createAvatar(Class virtualityType, Body body) {
+    System.out.println("AgvFactory creates Avatar");
+    if (virtualityType.equals(net.agileframes.vr.space3d.Virtuality3D.class) ) {  return getAvatar3D(body); }
+//    else if (virtualityType.equals(net.agileframes.vr.space2d.Virtuality2D.class) ) {  return getAvatar2D(body); }
+    return null;
+  }
+  protected Avatar getAvatar2D(Body body) { return null; }
+  protected Avatar getAvatar3D(Body body) {
+    AvatarAGV avatar = new AvatarAGV(body, 0);
+    avatar.setGeometryAndAppearanceID(1, appearance.intValue());
+    avatar.setText(text);
+    return avatar;
+  }
+
+}

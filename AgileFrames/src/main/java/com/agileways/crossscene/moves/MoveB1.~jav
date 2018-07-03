@@ -1,0 +1,42 @@
+package com.agileways.crossscene.moves;
+
+import com.agileways.crossscene.manoeuvres.ManoeuvreB1;
+import net.agileframes.core.forces.Move;
+import net.agileframes.core.forces.Flag;
+import net.agileframes.core.forces.Sign;
+
+public class MoveB1 extends Move {
+
+  public MoveB1() throws java.rmi.RemoteException {
+    this.manoeuvre = new ManoeuvreB1();  // ManoeuvreB1 has 3 Flags: started and finished
+    this.signs = new Sign[2];
+    this.signs[0] = new Sign();
+    this.finishedSign = new Sign();
+    this.signs[1] = this.finishedSign;
+  }
+
+  public void moveScript(){
+    try {
+      manoeuvre.startExecution();
+
+      this.watch(manoeuvre.getFlag(0)); // startedFlag
+      System.out.println("B1: started!");
+      this.signs[0].broadcast();
+      System.out.println("B1: Insisting on entryTicket0");
+
+      entryTickets[0].insist();
+      System.out.println("B1: Insisted!!");
+
+      this.watch(manoeuvre.getFlag(2));// finishedFlag
+      System.out.println("B1: finished!");
+      this.signs[1].broadcast();
+
+      System.out.println("B1: Freeing entryTicket1");
+      entryTickets[1].free();
+
+    } catch (Exception e) {
+       System.out.println("Exception in MoveB1.moveScript(): "+e.getMessage());
+       e.printStackTrace();
+    }
+  }
+}

@@ -1,0 +1,31 @@
+package net.agileframes.core.vr;
+import net.jini.entry.AbstractEntry;
+import java.lang.ClassCastException;
+
+
+/**
+ * An implementation of the Entry interface that
+ * knows to cast the service object to type Avatar
+ * and instantiates and returns a new Avatar object
+ */
+public class AvatarFactory extends AbstractEntry {
+  public AvatarFactory() {}
+
+
+  /**
+   * Retrieves the right Avatar-type coresponding to the uploaded Body
+   * @param Body The machine-descendant object which has been uploaded
+   * @return Avatar corresponding to the Body uploaded
+   */
+  public Avatar createAvatar(Class virtualityType, Body body) {
+    System.out.println("AvatarFactory creates Avatar");
+    if (virtualityType.equals(net.agileframes.vr.space3d.Virtuality3D.class) ) {  return getAvatar3D(body); }
+//    else if (virtualityType.equals(net.agileframes.vr.space2d.Virtuality2D.class) ) {  return getAvatar2D(body); }
+    else throw new ClassCastException("AvatarFactory could not find right ");
+  }
+
+
+  protected Avatar getAvatar2D(Body body) { return null; }
+  protected Avatar getAvatar3D(Body body) { return null; }
+
+}

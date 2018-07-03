@@ -1,0 +1,16 @@
+package net.agileframes.core.traces;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import net.jini.core.transaction.Transaction;
+import net.agileframes.traces.ticket.PrimeTicket;
+
+public interface SemaphoreRemote extends Remote {
+  public boolean attempt(PrimeTicket pt) throws RemoteException;
+  public boolean reserve(PrimeTicket pt) throws RemoteException;
+  public void reserve(Transaction txn, PrimeTicket pt) throws RemoteException, ReserveDeniedException;
+  public void free(PrimeTicket pt) throws RemoteException;
+
+  public String getName() throws RemoteException;
+  public void abort(PrimeTicket prime_ticket) throws RemoteException;
+  public int snip(PrimeTicket prime_ticket) throws RemoteException;
+}

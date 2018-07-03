@@ -1,24 +1,48 @@
 package net.agileframes.traces;
+
+// DEPRICATED!!
+
 import net.agileframes.core.traces.Navigator;
 import net.agileframes.core.traces.Action;
 import net.agileframes.core.traces.Scene;
-import net.agileframes.core.forces.Actor;
+import net.agileframes.core.traces.Actor;
 import net.agileframes.core.server.Service;
 import net.agileframes.core.server.Server;
 import net.agileframes.core.server.Service.UnknownClientException;
 import net.jini.core.lookup.ServiceID;
+import net.agileframes.core.traces.SceneAction;
+
+import net.agileframes.core.vr.Avatar;
 
 public class NavigatorProxy implements Navigator { // serializable !!
 
-  public Scene scene = null; // remote interface
+  private Scene scene = null; // remote interface
 
   public NavigatorProxy(Scene scene) {
     this.scene = scene;
   }
 
   ///////////////// implementation of Navigator ////////////////
+  public boolean getLifeSign() throws java.rmi.RemoteException { return scene.getLifeSign(); }
+  public Scene getScene() { return scene; }
 
-   public Action getSceneAction(String name) { return null; }
+  public void destroySceneAction(Actor actor) {
+    try { scene.destroySceneAction(actor); }
+    catch (Exception e) {
+      System.out.println("Exception while destroying SceneAction in NavigatorProxy. Probably because Scene is no longer available");
+      System.out.println("Exception will be ignored.");
+    }
+  }
+
+  public SceneAction getSceneAction(String name, Actor actor) {
+    SceneAction action = null;
+    try { action = scene.getSceneAction(name, actor); }
+    catch (Exception e) {
+      System.out.println("Exception while getting SceneAction in NavigatorProxy. Exception will be ignored.");
+      e.printStackTrace();
+    }
+    return action;
+  }
 
   /**
   @param destination a Local somewhere in the infrastructure.
@@ -70,8 +94,8 @@ public class NavigatorProxy implements Navigator { // serializable !!
 
   //////////////// implementation of service /////////////////////
 
-  public Server getServer(){ return null; }
+  public Server getServer() { return null; }
   public void setClient(Object client,ServiceID clientID) throws UnknownClientException {}
   public void setClient(Object client) throws UnknownClientException {}
 
-} 
+}

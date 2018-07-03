@@ -1,0 +1,26 @@
+package net.agileframes.vr;
+
+import net.agileframes.vr.AvatarImplBase;
+import net.agileframes.server.AgileSystem;
+
+public class SingleRefreshThread implements Runnable {
+
+  private AvatarImplBase[] avatars;
+
+  public SingleRefreshThread(AvatarImplBase[] avatars) {
+    this.avatars = avatars;
+    Thread singleRefreshThread = new Thread(this, "SingleRefreshThread");
+    singleRefreshThread.start();
+  }
+
+  public void run() {
+    System.out.println("started refreshing");
+    for (;;) {
+      long time = AgileSystem.getTime();
+      for (int i=0; i<avatars.length; i++) {
+        avatars[i].refresh();
+      }
+      System.out.println("RefreshTime for all avatars: "+(AgileSystem.getTime() - time));
+    }
+  }
+}

@@ -4,15 +4,15 @@ import java.io.Serializable;
 import net.jini.core.lookup.ServiceID;
 
 /**
-A service should extend and implement this serializable interface. Such an interface
+<b>A service should extend and implement this serializable interface.</b><p> Such an interface
 would identify such a service as an agileframes-service and provide methods that
 clients need to communicate the service-protocol.
 
 @see net.agileframes.server.ServiceProxy
 
  * @since AgileFrames 1.0.0
- * @author Lindeijer, Evers
- * @version 0.0.1
+ * @author  D.G. Lindeijer
+ * @version 0.1
 
 */
 
@@ -41,7 +41,7 @@ public interface Service extends Serializable {
   public void setClient(Object client) throws UnknownClientException ;
 
   /**
-  Exception indicating that the client does not implement the protocol associated with the requested service.
+  <b>Exception indicating that the client does not implement the protocol associated with the requested service.</b><p>
   A service can only be provided by a server when the client and itself respect the protocol
   associated with the service. This implies that both the client and the service-proxy
   implement the appropriate interfaces so that the two processes can invoke the desired methods

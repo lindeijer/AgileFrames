@@ -1,0 +1,35 @@
+package net.agileframes.forces.xyaspace.trajectories;
+import net.agileframes.core.forces.FuTrajectory;
+import net.agileframes.core.forces.FuSpace;
+import net.agileframes.forces.xyaspace.*;
+
+public class GoStraight extends FuTrajectory {
+  private double length = Double.NaN;
+
+  public GoStraight(double length, XYATransform transform) {
+    this(length, transform, 0.5, 2.5, 0.25, 0.25);
+  }
+  public GoStraight(double length, XYATransform transform, double pilotAlpha,
+                    double pilotBeta, double speedGamma, double speedMu) {
+    this.length = length;
+    this.transform = transform;
+    this.pilotAlpha = pilotAlpha;
+    this.pilotBeta = pilotBeta;
+    this.speedGamma = speedGamma;
+    this.speedMu = speedMu;
+
+    this.evolutionEnd = length;
+    FuSpace endPoint = new XYASpace(length, 0, 0);
+    extension = endPoint.createConnectionPath(new XYASpace(length + 1, 0, 0));
+  }
+
+  public FuSpace getTrajectPoint(double u) {
+    if (u > evolutionEnd) { return transform.transform( extension.getConnectionPoint(u - evolutionEnd) ); }
+    return transform.transform(new XYASpace(u, 0, 0));
+  }
+
+  public double getProfileSpeed(double u) {
+    if (u > evolutionEnd) { return 0; }
+    return 1;
+  }
+}

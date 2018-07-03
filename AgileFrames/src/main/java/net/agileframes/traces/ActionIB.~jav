@@ -1,0 +1,41 @@
+package net.agileframes.traces;
+
+import net.agileframes.core.forces.Actor;
+import net.agileframes.core.traces.Ticket;
+import net.agileframes.core.traces.Action;
+import net.agileframes.core.traces.Scene;
+
+import java.rmi.server.UnicastRemoteObject;
+import java.rmi.RemoteException;
+import java.io.Serializable;
+
+//public class ActionIB extends UnicastRemoteObject implements Action {
+public class ActionIB implements Action, Serializable {
+  //--------------------------- Attributes ----------------------------------
+  protected Actor actor = null;
+  protected Scene scene = null;
+
+  public static final int CREATED     = 0; // after creation
+  public static final int INITIALIZED = 1;
+  public static final int ACTIVE      = 2; // after activity.
+  public static final int EXECUTING   = 3; // execute called , script started
+  public static final int POST_EXEC   = 4; // script completed
+  public static final int POST_ACTIVE = 5; // after last activity
+
+  //--------------------------- Constructor ---------------------------------
+  public ActionIB() throws RemoteException {}
+
+  //--------------------------- Methods -------------------------------------
+  private int state = 0;
+  protected void setState(int s) { state = s; }
+  protected int getState() { return state; }
+  protected boolean isCreated() { return (state == CREATED); }
+  protected boolean isInitialized() {
+    System.out.println(" state="+state);
+    return (state == INITIALIZED);
+  }
+  protected boolean isActive() { return (state == ACTIVE); }
+  protected boolean isExecuting() { return (state == EXECUTING); }
+  protected boolean isPostExec() { return (state == POST_EXEC); }
+  protected boolean isPostActive() { return (state == POST_ACTIVE); }
+}

@@ -1,16 +1,19 @@
 package net.agileframes.core.traces;
 
 import net.agileframes.core.server.Service;
-import net.agileframes.core.forces.Actor;
+import net.agileframes.core.traces.Actor;
+
+import net.agileframes.core.vr.Avatar;
 
 /**
 Service provided by scenes. Like the actor-service provided by machines.
-It will be so that actors will download navidators to help them around
+It will be so that actors will download navigators to help them around
 */
 
 public interface Navigator extends Service {
 
-  public Action getSceneAction(String name);
+
+  public SceneAction getSceneAction(String name, Actor actor);
 
   /**
   @param destination a Local somewhere in the infrastructure.
@@ -60,5 +63,8 @@ public interface Navigator extends Service {
   );
 
 
+  public boolean getLifeSign() throws java.rmi.RemoteException;
 
-} 
+  public Scene getScene() ;
+
+}

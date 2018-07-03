@@ -1,0 +1,17 @@
+package net.agileframes.forces.flags;
+
+import net.agileframes.core.forces.Flag;
+import net.agileframes.core.forces.Manoeuvre;
+
+public class FinishedFlag extends Flag {
+  public FinishedFlag(Manoeuvre manoeuvre) {
+    this.manoeuvre = manoeuvre;
+  }
+  public void evaluate() {
+    if (manoeuvre.getCalcEvolution() >= manoeuvre.getTrajectory().getEvolutionEnd()) { raise(); }
+  }
+  protected void copyAllFields(Flag flag) {
+  }
+
+}
+

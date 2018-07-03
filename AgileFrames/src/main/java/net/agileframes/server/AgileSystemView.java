@@ -1,22 +1,35 @@
 package net.agileframes.server;
-
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-//import javax.swing.*;
-//import net.jini.core.entry.*;
-//import java.io.*;
-
+/**
+ * <b>The frame of the AgileSystem.</b>
+ * <p>
+ * Needed in order to dispose the AgileSystem.
+ * Imports AWT-classes.
+ * @author  D.G. Lindeijer
+ * @version 0.1
+ */
 public class AgileSystemView extends Frame {
-
   AgileSystemRoot agileSystemRoot = null;
-
+  /**
+   * Constructor with title and reference to root.<p>
+   * Sets AgileSystemRoot and Title.
+   * @see   #AgileSystemView(String)
+   * @param agileSystemRoot a reference to AgileSystemRoot
+   * @param title           the title for this frame
+   */
   public AgileSystemView(AgileSystemRoot agileSystemRoot,String title) {
     this(title);
     this.agileSystemRoot = agileSystemRoot;
   }
-  
+  /**
+   * Constructor with title.<p>
+   * Is listening for window-closing-events. On closing, dispose will be called.
+   * @see   AgileSystem#dispose()
+   * @param title the title for this frame.
+   */
   public AgileSystemView(String title) {
     super(title);
     this.addWindowListener(

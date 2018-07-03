@@ -1,5 +1,5 @@
 package net.agileframes.forces;
-import net.agileframes.core.forces.State;
+//import net.agileframes.core.forces.State;
 
 /**
 An implementation of this interface must deduce the controls/mechatronic-instructions
@@ -24,7 +24,7 @@ public interface MechatronicsDriver {
   @param machineStep to be achieved at machineStep.time
   @see Interpreter.getMachineStep
   */
-  public void setMachineStep(State machineStep);
+//  public void setMachineStep(State machineStep);
 
   /**
   Gets the new response-model according to observed machine responses.

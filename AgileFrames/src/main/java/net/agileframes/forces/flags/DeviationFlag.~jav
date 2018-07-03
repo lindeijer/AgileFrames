@@ -1,0 +1,19 @@
+package net.agileframes.forces.flags;
+
+import net.agileframes.core.forces.Flag;
+import net.agileframes.core.forces.Manoeuvre;
+
+public class DeviationFlag extends Flag {
+  private double deviation = Double.NaN;
+  public DeviationFlag(Manoeuvre manoeuvre, double deviation) {
+    this.manoeuvre = manoeuvre;
+    this.deviation = deviation;
+  }
+  public void evaluate() {
+    if (deviation <= manoeuvre.getCalcDeviation()) { raise(); }
+  }
+  protected void copyAllFields(Flag flag) {
+    this.deviation = ((DeviationFlag)flag).deviation;
+  }
+}
+

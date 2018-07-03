@@ -1,40 +1,37 @@
 package net.agileframes.server;
-
-//import net.agileframes.activation.*;
-// import java.rmi.activation.*;
-//import java.rmi.*;
-//import net.jini.core.lookup.*;
-//import net.jini.lookup.entry.*;
-//import net.jini.core.entry.*;
-//import net.jini.core.discovery.*;
-//import net.jini.discovery.*;
-//import com.sun.jini.lease.LeaseRenewalManager;
-//import com.sun.jini.lookup.*;
-//import java.rmi.server.*;
-//import java.awt.*;
-//import java.awt.event.*;
-//import net.jini.space.JavaSpace;
-//import java.io.IOException;
-//import com.sun.jini.reggie.CreateLookup;
-//import net.jini.core.event.RemoteEvent;
-
-/**
-AgileSystemRoot is an instance of AgileSystem needed for discovery of lookup services.
-*/
-
 import net.agileframes.server.AgileSystemView;
 
+/**
+ * <b> AgileSystemRoot is an instance of AgileSystem needed for discovery of lookup services.</b>
+ * <p>
+ * Currently almost empty.
+ * @author  D.G. Lindeijer
+ * @version 0.1
+ */
 public class AgileSystemRoot extends AgileSystem {
 
+  /** The AgileSystem-Frame. */
   protected static AgileSystemView agileSystemView = null;
 
+  /**
+   * Constructor.<p>
+   * If this AgileSystem is visible, a new AgileSystemView will be created.
+   * @see   AgileSystemView
+   * @see   AgileSystem#isVisible
+   * @param visible indicates if a frame is made for this AgileSystem.
+   */
   public AgileSystemRoot(boolean visible) {
     if (visible) {
       agileSystemView = new AgileSystemView("AgileSystem for " + AgileSystem.getLoginbaseName());
     }
   }
 
-   public static void main(String[] args) {
+  /**
+   * Main method.<p>
+   * Not implemented.
+   * @param args  run-parameters: not used
+   */
+  public static void main(String[] args) {
   }
 
 

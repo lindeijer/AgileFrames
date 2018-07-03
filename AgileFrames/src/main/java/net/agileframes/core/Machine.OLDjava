@@ -1,0 +1,17 @@
+package net.agileframes.core;
+
+import java.rmi.RemoteException;
+import net.agileframes.core.server.Server;
+import net.agileframes.forces.mfd.ManoeuvreDriver;
+import net.agileframes.core.forces.FuSpace;
+
+public interface Machine extends Server {
+  public ManoeuvreDriver getManoeuvreDriver() throws RemoteException;
+  public void start() throws RemoteException;
+  public Properties getProperties() throws RemoteException;
+  public int getMachineNumber() throws RemoteException;
+
+  public FuSpace getState() throws RemoteException;
+  //--------------------------- Inner-interface ---------------------
+  public interface Properties {}
+}

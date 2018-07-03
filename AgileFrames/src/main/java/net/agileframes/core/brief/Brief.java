@@ -4,8 +4,8 @@ import net.jini.core.entry.Entry;
 import net.jini.core.lookup.ServiceID;
 
 /**
-Brief is the base-class for sending messages asynchronously to objects within
-the same AgileFrames-system. A destination-object retrieves a brief by presenting
+<b>Brief is the base-class for sending messages asynchronously to objects within
+the same AgileFrames-system.</b><p> A destination-object retrieves a brief by presenting
 the AgileFrames-system a template describing the brief. The template may match
 any number of briefs sent by source-objects, the AgileFrames-system will select one for
 retrieval. Depending on the request the brief itself or a copy of the brief will
@@ -26,7 +26,8 @@ Objects may acquire a unique ServiceID from the AgileFrames-system and then use
 that ServiceID in brief-communication. This impliest that a source-object must
 acquire the destination-objects servicIF
 
-
+@author   D.G.Lindeijer
+@version  0.1
 */
 
 public class Brief implements Entry {

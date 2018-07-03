@@ -2,18 +2,32 @@ package net.agileframes.vr;
 
 import javax.vecmath.*;
 
-public class EulerXYZ {
+/**
+ * <b>EulerXYZ is a mathematical class used in calculating position and orientation of bodies.</b><p>
+ * Given an arbitrary rotation about the three axis, ie X, Y, Z it will calculate a so called
+ * Euler matrix, which is then passed to the J3D structure.
+ * When given an eulermatrix is will deduce the rotation about the three axis.
+ * @author  F.A. van Dijk
+ * @version 0.1
+ */
+ public class EulerXYZ {
   private Matrix4d rx = null;
   private Matrix4d ry = null;
   private Matrix4d rz = null;
-
   private Matrix4d rotation = null;
 
+ /**
+  * Constructs an Euler matrix from a rotation matrix<p>
+  * @param  rotation  the matrix to construct from
+  */
   public EulerXYZ(Matrix4d rotation) {
     this();
     this.rotation.set(rotation);
   }
 
+  /**
+   * Constructs an empty Eulermatrix.<p>
+   */
   public EulerXYZ(){
     this.rx = new Matrix4d();
     this.ry = new Matrix4d();
@@ -23,7 +37,7 @@ public class EulerXYZ {
 
 
   /**
-   * Construct a new EulerXYZ object that represent a rotation about the X, Y and Z axis respectively
+   * Constructs a new EulerXYZ object that represent a rotation about the X, Y and Z axis respectively.<p>
    * @param x the angle to rotate about the x-axis
    * @param y the angle to rotate about the y-axis
    * @param z the angle to rotate about the z-axis
@@ -34,7 +48,7 @@ public class EulerXYZ {
   }
 
   /**
-   * Set new angle rotation values in an EulerXYZ matrix
+   * Sets new angle rotation values in an EulerXYZ matrix.<p>
    * @param x the angle to rotate about the x-axis
    * @param y the angle to rotate about the y-axis
    * @param z the angle to rotate about the z-axis
@@ -48,7 +62,7 @@ public class EulerXYZ {
   }
 
   /**
-   * Set new angle rotation values in an EulerXYZ matrix
+   * Sets new angle rotation values in an EulerXYZ matrix.<p>
    * @param m the new rotation matrix
    */
   public void set(Matrix4d m){
@@ -56,7 +70,7 @@ public class EulerXYZ {
   }
 
   /**
-   * calculate the EulerXYZ matrix
+   * Calculates the EulerXYZ matrix.<p>
    */
   private void calcXYZ() {
     this.rotation.set(rz);
@@ -65,33 +79,36 @@ public class EulerXYZ {
   }
 
   /**
-   * get the rotation matrix
-   * @return th e rotation matrix
+   * Returns the rotation matrix.<p>
+   * @return the rotation matrix
    */
   public Matrix4d getRotationMatrix(){
     Matrix4d x = new Matrix4d(this.rotation);
     return x;
   }
-
-  public void get(Matrix4d rotationMatrix){
+  /**
+   * Sets the rotation on the rotation matrix.<p>
+   * @param       rotationMatrix the matrix to set
+   */
+  public void get(Matrix4d rotationMatrix){// TODO: change the name of this method!
     rotationMatrix.set(this.rotation);
   }
-
-//  public void get(double[] angle){
-//    angle = this.calculateEulerAngles();
-//  }
-
-
-  public void get(Vector3d angles){
+  /**
+   * Sets the three euler angles from an Eulermatrix.<p>
+   * @param angles a Vector3d containing the three angles
+   */
+  public void get(Vector3d angles){//TODO: change the name of this method!
     angles = this.calculateEulerAngles();
   }
 
   /**
-   * This method validates a certain triplet.
+   * Validates a certain triplet.<p>
    * Given a combination of three euler-angles, it checks whether they meet other calculations
-   * @param x the angle to rotate about the x axis
-   * @param y the angle to rotate about the y axis
-   * @param z the angle to rotate about the z axis
+   * @param   x the angle to rotate about the x axis
+   * @param   y the angle to rotate about the y axis
+   * @param   z the angle to rotate about the z axis
+   * @return  <code><b>true</b></code> iff they meet other calculations<br>
+   *          <code><b>false</b></code> otherwise
    */
   private boolean validate(double x, double y, double z) {
     boolean match = false;
@@ -106,10 +123,10 @@ public class EulerXYZ {
   }
 
   /**
-   * Calculate the absolute difference between to doubles a verifies if this difference meets a certain precision
+   * Calculates the absolute difference between to doubles a verifies if this difference meets a certain precision<p>
    * @param a the first double
    * @param b the second double
-   * @return whether or not the difference is smaller than a certain precision
+   * @return whether or not the difference is smaller than a certain value
    */
   private boolean equal(double a, double b){
     double difference=Math.abs(a-b);
@@ -122,15 +139,13 @@ public class EulerXYZ {
 
 
   /**
-   * Calculate the three euler angles from an euler matrix
+   * Calculates the three euler angles from an euler matrix.<p>
    * @return the three euler angles
    */
-  //public double[] calculateEulerAngles(){
   public Vector3d calculateEulerAngles() {
     int index=0;
     double y1;
     double y2;
-    //double[] eulerAngles = new double[3];
 
     Vector3d ea = new Vector3d();
 
@@ -149,7 +164,6 @@ public class EulerXYZ {
     if (!trouble) {
       y1 = -Math.asin(this.rotation.m20);
       y2 = Math.PI-y1;
-
 
       x11 = Math.asin(this.rotation.m21/Math.cos(y1));
       x12 = Math.PI-x11;
@@ -177,17 +191,12 @@ public class EulerXYZ {
         matched=validate(triplet[index][0], triplet[index][1], triplet[index][2]);
       }
       if (matched) {
-        //eulerAngles = triplet[index-1];
         ea.x = triplet[index-1][0];
         ea.y = triplet[index-1][1];
         ea.z = triplet[index-1][2];
       } // a match was found !!
       else {
         System.err.println("A Humongous error has just occured !!!");
-        //eulerAngles[0] = Double.NaN;
-        //eulerAngles[1] = Double.NaN;
-        //eulerAngles[2] = Double.NaN;
-
         ea.x = Double.NaN;
         ea.y = Double.NaN;
         ea.z = Double.NaN;
@@ -204,23 +213,14 @@ public class EulerXYZ {
         sollution1 = Math.asin(this.rotation.m01);
         sollution2 = Math.PI - sollution1;
         if (equal(this.rotation.m02, Math.cos(sollution1))) {
-          //eulerAngles[this.X_EulerAngle] = sollution1;
-          //eulerAngles[this.Y_EulerAngle] = Math.PI/2;
-          //eulerAngles[this.Z_EulerAngle] = 0;
-
           ea.x = sollution1;
           ea.y = Math.PI/2;
           ea.z = 0;
         } // if m13==1
         else {
-          //eulerAngles[this.X_EulerAngle] = sollution2;
-          //eulerAngles[this.Y_EulerAngle] = Math.PI/2;
-          //eulerAngles[this.Z_EulerAngle] = 0;
-
           ea.x = sollution2;
           ea.y = Math.PI/2;
           ea.z = 0;
-
         } // m31==-1
       } //Y rotation = 1
       // Y rotation is equal to -PI/2
@@ -228,27 +228,17 @@ public class EulerXYZ {
         sollution1 = -Math.asin(this.rotation.m01);
         sollution2 = Math.PI - sollution1;
         if (equal(this.rotation.m02, -Math.cos(sollution1))) {
-          //eulerAngles[this.X_EulerAngle] = sollution1;
-          //eulerAngles[this.Y_EulerAngle] = -Math.PI/2;
-          //eulerAngles[this.Z_EulerAngle] = 0;
-
           ea.x = sollution1;
           ea.y = -Math.PI/2;
           ea.z = 0;
         } // if m13==1
         else {
-          //eulerAngles[this.X_EulerAngle] = sollution2;
-          //eulerAngles[this.Y_EulerAngle] = -Math.PI/2;
-          //eulerAngles[this.Z_EulerAngle] = 0;
-
           ea.x = sollution2;
           ea.y = -Math.PI/2;
           ea.z = 0;
-
         } // m13==-1
       } // Y rotation equal to -1
     } // trouble, divide by zero
-//    return eulerAngles;
     return ea;
   }//calculateEulerAngles
 

@@ -1,0 +1,7 @@
+package net.agileframes.core.vr;
+
+public interface Virtuality {
+
+  public Virtuality() {
+  }
+} 

@@ -1,17 +1,16 @@
-
-
-
 package net.agileframes.traces.ticket;
-import net.agileframes.traces.SceneAction;
+import net.agileframes.core.traces.SceneAction;
 
+import net.agileframes.core.traces.Actor;
 import net.agileframes.core.traces.Ticket;
 import net.agileframes.core.traces.BlockException;
 import net.agileframes.core.traces.ReserveDeniedException;
 import java.rmi.RemoteException;
-import net.jini.core.transaction.Transaction;
-import com.objectspace.jgl.Array;
-/**temp**/import net.agileframes.forces.mfd.ActorProxy;
 
+import net.jini.core.transaction.Transaction;
+import net.jini.core.lookup.ServiceID;
+
+import com.objectspace.jgl.Array;
 
 /**
 Provides basic functionality common to all types of tickets.
@@ -26,8 +25,10 @@ Provides basic functionality common to all types of tickets.
 */
 
 public abstract class TicketImplBase implements Ticket {
-  /**temp**/public String  semName="";
+  public String  semName="";
+  private final boolean DEBUG = false;
 
+  public TicketImplBase() {System.out.println("TicketIB()");}
   /**
   State indicating that the ticket is not making any claim.
   */
@@ -62,13 +63,13 @@ public abstract class TicketImplBase implements Ticket {
     else return "anonymous";
   }
 
-  public String toString() {
+/*public String toString() {
     String identity =
       this.getName() + "@" + this.getClass().toString() + " in " +
       this.scene_action.getClass().toString() + " belonging to " +
       this.scene_action.actor.toString();
     return identity;
-  }
+  }*/
 
   ///////////////////////////////////////////////////////////////////////
 
@@ -77,9 +78,10 @@ public abstract class TicketImplBase implements Ticket {
   @see AgileFrames#TRACES#Ticket
   */
   private int state = 0;
-  protected void setState(int i) {
-    if (state != i) {
-      switch (i) {
+  protected void setState(int index) {
+    if (DEBUG) System.out.println("*D* TicketIB.setState called, state="+state+"  index="+index);
+    if (state != index) {
+      switch (index) {
       case INITIAL: {
         state = INITIAL;
         //System.out.println(toString() + " has become INITIAL");
@@ -92,7 +94,6 @@ public abstract class TicketImplBase implements Ticket {
         }
       case ASSIGNED: {
         state = ASSIGNED;
-        //System.out.println(toString() + " has become ASSIGNED");
         this.callback();
         break;
         }
@@ -106,8 +107,8 @@ public abstract class TicketImplBase implements Ticket {
     }
   }
   public int getState() { return state; }
-  public boolean isState(int i) {
-    return (state == i);
+  public boolean isState(int index) {
+    return (state == index);
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -117,6 +118,8 @@ public abstract class TicketImplBase implements Ticket {
   */
   public SceneAction scene_action = null;
 
+//  public TicketViewer ticketViewer = null;
+
   /**
   Upon creation a tickets state is INITIAL.
   */
@@ -124,6 +127,7 @@ public abstract class TicketImplBase implements Ticket {
     if (name == null) { this.name = "anonymous"; } else { this.name = name; }
     this.scene_action = scene_action;
     this.state = INITIAL;
+//    this.ticketViewer = new TicketViewer(this);
   }
 
 
@@ -142,6 +146,7 @@ public abstract class TicketImplBase implements Ticket {
   @exception BlockException this call was made by a second thread.
   */
   public synchronized boolean attempt() throws BlockException {
+    //System.out.println("Attempt, state="+state+";   name ="+this.toString());
     if (transaction != null) { throw new BlockException(
       "Second thread in " + toString() +  " attempt() during transaction");
     }
@@ -149,12 +154,13 @@ public abstract class TicketImplBase implements Ticket {
       case INITIAL : {
         if ( _attempt() ) {
           setState(ASSIGNED);
+          //System.out.println("INITIAL: return TRUE");
           return true;
         }
         else { return false; }
       }
-      case RESERVING : { return false; }
-      case ASSIGNED  : { return true; }
+      case RESERVING : { /*System.out.println("RESERVED: return FALSE");*/ return false; }
+      case ASSIGNED  : { /*System.out.println("ASSIGNED: return TRUE");*/ return true; }
       case BLOCKING  : { throw new BlockException(
         "Second thread in " + toString() +  " calling attempt()");
       }
@@ -173,6 +179,7 @@ public abstract class TicketImplBase implements Ticket {
   @exception BlockException this call was made by a second thread.
   */
   public synchronized void reserve() throws BlockException {
+    //System.out.println("TicketImplBase  "+toString()+".reserve()");
     if (transaction != null) { throw new BlockException(
       "Second thread in " + toString() +  " reserve() during transaction");
     }
@@ -202,6 +209,7 @@ public abstract class TicketImplBase implements Ticket {
   @exception BlockException this call was made by a second thread.
   */
   public synchronized void insist() throws BlockException {
+    if (DEBUG) System.out.println("TicketImplBase  "+toString()+".insist(), state = "+state);
     //((ActorProxy)scene_action.actor).claimFrame.addText("Ticket -> insisted on "+semName+"\n");
     //((ActorProxy)scene_action.actor).claimFrame.addText("          in sceneAction "+scene_action.toString()+"\n");
 
@@ -240,11 +248,13 @@ public abstract class TicketImplBase implements Ticket {
   @exception BlockException this call was made by a second thread.
   */
   public synchronized void free() throws BlockException {
+    if (DEBUG) System.out.println("*D* TicketImplBase  "+toString()+".free(), state ="+state);
     if (transaction != null) { throw new BlockException(
       "Second thread in " + toString() +  " free() during transaction");
     }
+
     switch (state) {
-      case INITIAL : { break; }
+      case INITIAL : { /*break;*/ }
       case RESERVING : {
         _free();
         setState(INITIAL);
@@ -298,6 +308,7 @@ public abstract class TicketImplBase implements Ticket {
   */
   public synchronized void reserve(Transaction txn)
       throws ReserveDeniedException,BlockException {
+    //System.out.println("TicketImplBase  "+toString()+".reserve( "+txn.toString()+" )");
     if (transaction != null) {
       if (txn.equals(transaction)) { return; }
     }
@@ -323,9 +334,9 @@ public abstract class TicketImplBase implements Ticket {
   Preceded by reserve(Transaction), creates the callback structure.
   Last transaction committed. This method keeps re-trying upon RemoteExceptions.
   */
-  public synchronized boolean reserve(
-          net.agileframes.core.traces.Ticket super_ticket,int i)
+  public synchronized boolean reserve(Ticket super_ticket,int i)
       throws BlockException {
+    if (DEBUG) System.out.println("*D* TicketImplBase  "+toString()+".reserve( "+super_ticket.toString()+", "+i+" )");
     transaction = null;
     boolean isassigned;
     switch (state) {
@@ -353,18 +364,30 @@ public abstract class TicketImplBase implements Ticket {
 
   Array callback_list = new Array();
 
-  private class ZZZ {
-    net.agileframes.core.traces.Ticket super_ticket;
+  private class ZZZ implements java.io.Serializable {
+    public Ticket super_ticket;
     int index;
-    public ZZZ(net.agileframes.core.traces.Ticket super_ticket,int i) {
+    public ZZZ() {}
+    public ZZZ(Ticket super_ticket,int i) {
       this.super_ticket = super_ticket;
       this.index = i;
     }
+    public boolean equals (Object obj) {
+      ZZZ zzz = (ZZZ)obj;
+      boolean isSameIndex = (zzz.index == this.index);
+      boolean isSameSuper = (zzz.super_ticket.equals(this.super_ticket));
+      return (isSameIndex && isSameSuper);
+    }
   }
 
-  private void remember(net.agileframes.core.traces.Ticket super_ticket,int i) {
+  private void remember(Ticket super_ticket,int i) {
+    if (DEBUG) System.out.println("### REMEMBERING TICKET this="+this.toString()+"  super="+super_ticket.toString()+"   index="+i);
     ZZZ zzz = new ZZZ(super_ticket,i);
-    callback_list.pushBack(zzz);
+    if (!callback_list.contains(zzz)) {
+      callback_list.pushBack(zzz);
+    } else {
+      if (DEBUG) System.out.println("### Tried to remember ticket, but we already have this ticket in out list");
+    }
   }
 
   private void callback() {
@@ -372,6 +395,7 @@ public abstract class TicketImplBase implements Ticket {
     while (!callback_list.isEmpty()) {
       zzz = (ZZZ) callback_list.popFront();
       try {
+        if (DEBUG) System.out.println("### CALLING BACK ON "+zzz.super_ticket.toString()+"    this="+this.toString());
         zzz.super_ticket.setAssigned(this,zzz.index);
       }
       catch (RemoteException re) {
@@ -381,6 +405,17 @@ public abstract class TicketImplBase implements Ticket {
         System.exit(1);
       }
     }
+  }
+
+  protected ServiceID actorID = null; // will be set in clone
+  public Object clone(Actor actor) throws java.lang.CloneNotSupportedException {
+    TicketImplBase clone = (TicketImplBase)super.clone();
+    try {
+      clone.actorID = actor.getServiceID();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return clone;
   }
 
   ///////////////////////////////////////////////////////////////////////
@@ -408,6 +443,7 @@ public abstract class TicketImplBase implements Ticket {
   protected abstract boolean  _reserve(net.agileframes.core.traces.Ticket super_ticket,int i)
     throws BlockException;
 
+
   /////////// View Related Methods ////////////////////////////////////////
 
   /**
@@ -420,6 +456,7 @@ public abstract class TicketImplBase implements Ticket {
   */
 
   protected void modelChanged() {
+//    ticketViewer.modelChanged();
 //    ((ActorProxy)scene_action.actor).claimFrame.addText("Ticket -> "+semName+" has become "+state+"\n");
 //    ((ActorProxy)scene_action.actor).claimFrame.addText("          in sceneAction "+scene_action.toString()+"\n");
   /*

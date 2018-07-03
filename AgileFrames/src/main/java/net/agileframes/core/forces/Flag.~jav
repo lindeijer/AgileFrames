@@ -1,0 +1,34 @@
+package net.agileframes.core.forces;
+import net.agileframes.core.forces.Manoeuvre;
+
+public abstract class Flag implements Cloneable {
+  //---------------------- Attributes --------------------------------------
+  private boolean raised = false;
+  protected Manoeuvre manoeuvre = null;
+  private Object[] listenerList = new Object[10];
+  private int listenerCounter = 0;
+  //---------------------- Methods -----------------------------------------
+  public abstract void evaluate();
+
+  protected void raise() {
+    this.raised = true;
+    for (int i = 0; i < listenerCounter; i++) {
+      synchronized (listenerList[i]) { listenerList[i].notify(); }
+    }
+  }
+
+  public void addListener(Object flagListener) {
+    listenerList[listenerCounter] = flagListener;
+    listenerCounter++;
+  }
+
+  public boolean isRaised() { return raised; }
+
+  public Object clone(Manoeuvre manoeuvre) throws CloneNotSupportedException {
+    Flag clone = null;
+    clone = (Flag)clone();
+    clone.manoeuvre = manoeuvre;
+    return clone;
+  }
+}
+

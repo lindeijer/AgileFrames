@@ -1,0 +1,81 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.77 [en] (WinNT; U) [Netscape]">
+</head>
+<body>
+The <i>Machine Function Driver</i> Interfaces.
+<p><b>Tasks</b>
+<br>The Machine Function Driver has four fundamental tasks:
+<ul>
+<li>
+StateFinder - Estimation of the state of execution</li>
+
+<li>
+ManoeuvreDriver - Deduction of the next execution-step</li>
+
+<li>
+Instructor - Deduction of the machine-type dependent internal directives</li>
+
+<li>
+PhysicalDriver - Deduction of the specific circumstantial dependent internal
+directives</li>
+</ul>
+<b>The machine function driver (mfd) as information object</b>
+<br>During the execution of a scene-action, the manoeuvres and the related
+trajectories are temporary objects: when finished, manoeuvre is discarded
+and, next, the succeeding manoeuvre will be created and activated. The
+permanent base is the executing machine, or, more abstractly, the information
+object: machine function driver (mfd). An mfd represents the ‘machine’,
+operates as permanent executor. In the mfd five executing modules are distinguished:
+ManoeuvreDriver; Communicator; StateFinder; Instructor and PhysicalDriver.
+<br>When a machine is started, an actor is made available simultaneously.
+An actor is equipped with an ‘intelligent communicator’ which it uses to
+communicate remotely with other actors. Normally, the actor normally is
+located on the same computer platform as the mfd, but if not, he can use
+its communicator to communicate remotely with its machine.
+<br>The ManoeuvreDriver triggers cyclic-updating. The stateFinder identifies
+the state of execution. The instructor translates the pilot course and
+reference acceleration in machine-type dependent instructions. In this
+also ‘local information’ (localInformation) can be taken into account;
+for example, the distance of an in front driving vehicle. Taking into account
+the behaviour of a specific machine in specific circumstances, PhysicalDriver
+deduces the directives for the mechanic-electronic interface.
+<p><b>The manoeuvre driver</b>
+<br>The class ManoeuvreDriver is completely programmed, but its ‘program’
+is invisible for the user. Via the methods anticipate and begin, a manoeuvre
+driver receives its instructions from the executing actor of an action-script,
+where the manoeuvre in question is attached as actual parameter.
+<p><b>The state finder</b>
+<br>Regarding the function-state, StateFinder is almost generic and ‘ready-to-use’.
+That is to say the data-structures and method getObservedEvolution are
+fully implemented. However, the original observations on the current function-states,
+which might be obtained by special instruments and special observation
+models and, therefore, must be specially programmed. For ‘local information’
+and ‘response information’, this applies even up to the internal data-structures
+within the machine function driver. Therefore the classes LocalInformation
+and ResponseInformation must be user-programmed. StateFinder works cyclically.
+Invocation of the update-method activates an updating-cycle. Then, on bases
+of the most recent observations (but invisible for the user), new observations
+are calculated.
+<p><b>The instructor and the physical driver</b>
+<br>The classes Instructor and PhysicalDriver are primarily machine-type
+dependent and, consequently, each machine-type requires its own variant.
+Both Instructor and PhysicalDriver operate cyclically, to be triggered
+by the update-method.
+<br>The task of instructor is to translate the pilot-course (from ManoeuvreDriver)
+and the reference acceleration in machine-type dependent ‘machine instructions’.
+Next, physicalDriver translates these in instructions to the mechatronic
+interface. During these translation steps the indicated course and acceleration
+might be modified, because of machine-dependent features. Therefore it
+is necessary to deduce the ‘effective’ speed and course from the actual
+mechatronic instructions. Within mfd, these are made available under ‘physicalDriver.getMechatronicSpeed’
+and ‘phyDriver.getMechatronicCourse’.
+<br>The Instructor and the PhysicalDriver are equipped with two machine-type
+dependent interfaces that serve as information-objects. The MachineInstruction
+contains the data that are calculated in the Instructor and are used as
+input for the PhysicalDriver. The MachineSetting contains the mechatronic
+instructions that are set on the machine.
+</body>
+</html>

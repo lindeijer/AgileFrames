@@ -1,0 +1,15 @@
+package net.agileframes.forces.mfd;
+import net.agileframes.core.forces.FuSpace$FuPath;
+
+public interface Instructor {
+  //------------------------- Methods ----------------------------
+  public void initialize(ManoeuvreDriver manoeuvreDriver);
+  public void updateMachineInstruction(FuPath pilotCourse, double pilotSpeed);
+
+  //------------------------- Getters and Setters ----------------
+  public long getTimeStamp();
+  public MachineInstruction getAdvisedInstruction();  
+
+  public abstract class MachineInstruction {}
+}
+

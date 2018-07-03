@@ -1,0 +1,150 @@
+package net.agileframes.traces;
+
+import net.jini.core.transaction.Transaction;
+import net.agileframes.core.traces.Ticket;
+import net.agileframes.server.ServerIB;
+import net.agileframes.server.AgileSystem;
+import net.jini.core.lookup.ServiceID;
+import net.agileframes.core.traces.Navigator;
+import net.jini.core.entry.Entry;
+import net.jini.lookup.entry.Name;
+import java.rmi.RemoteException;
+
+import net.agileframes.core.traces.Scene;
+import net.agileframes.core.traces.Semaphore;
+import net.agileframes.core.traces.SceneAction;
+import net.agileframes.core.traces.Actor;
+import net.agileframes.core.forces.Move;
+
+import net.agileframes.core.forces.FuSpace;
+import net.agileframes.core.vr.Avatar;
+import net.agileframes.core.vr.BodyRemote;
+import net.agileframes.core.vr.Body;
+import net.agileframes.core.vr.SceneAvatarFactory;
+import net.jini.core.entry.Entry;
+
+
+public class SceneIB extends ServerIB implements Scene, BodyRemote, Cloneable  {
+  protected Move[] moves;
+  protected SceneAction[] sceneActions;
+  protected Semaphore[] semaphores;
+  // should be set true if in run-time moves are added. Changes will be drawn in virtuality when sceneAvatar.setState() is called
+  protected boolean sceneChanged = false;
+
+  public SceneIB() throws java.rmi.RemoteException {}
+  public SceneIB(String name) throws java.rmi.RemoteException {
+    super(name);
+    initialize();
+    uploadNavigator();
+    uploadScene();
+  }
+
+  public void uploadScene() {
+    Entry[] attributeSets = new Entry[] {new Name(this.getName()), new SceneAvatarFactory()};
+    AgileSystem.registerService(this, null, this, attributeSets);
+  }
+
+  public void uploadNavigator() {
+    if (true) {
+      ServerIB backendScene = this;
+      ServiceID serviceID = null;
+      Object navigatorService = new NavigatorProxy(this);
+      Entry[] attributeSets = new Entry[] {
+        new Name(this.getName())
+      };
+      AgileSystem.registerService(backendScene,serviceID,navigatorService,attributeSets);
+      System.out.println("Uploaded generic and useless NavigatorProxy");
+    }
+    else {
+      System.out.println("Navigator for " + this.getName() + " not uploaded.");
+    }
+  }
+
+  public boolean getLifeSign() throws java.rmi.RemoteException { return true; }
+
+  public void initialize() throws java.rmi.RemoteException {} // code copied from scene declaration
+  ////////////////////////////////////////////////////////////////////////////
+
+  public Transaction getTransaction(Ticket[] tickets) {
+    System.out.println("SceneIB.getTransaction(Ticket[]) called, this = "+this.toString());
+    return AgileSystem.getTransaction();
+  }
+
+  ////////////////////////////////////////////////////////////////////////
+
+  protected void add(Move[] moves) {
+    // moves[i].setScene(this);
+    // this.moves[counter+i] = moves[i];
+  }
+  protected void add(Semaphore[] semaphores) {
+    // semaphores[i].setScene(this);
+    // this.semaphores[counter+i] = moves[i];
+  }
+
+  protected void add(Move[][] moves) {
+    // moves[i][j].setScene(this);
+    // this.moves[counter+i*maxj+j] = moves[i][j];
+  }
+  protected void add(Semaphore[][] semaphores) {
+    // semaphores[i][k].setScene(this);
+    // this.semaphores[counter+i*maxj+j] = moves[i][j];
+  }
+
+  // must be overloaded:
+  public SceneAction getSceneAction(String name, Actor actor) throws java.rmi.RemoteException { return null; }
+
+  public Move[] getMoves() throws RemoteException { return moves; }
+  public SceneAction[] getSceneActions() { return sceneActions; }
+  public Semaphore[] getSemaphores() { return semaphores; }
+  public boolean isChanged() throws RemoteException {
+    if (!sceneChanged) { return false; } else { sceneChanged = false; return true; }
+  }
+
+  public Object clone() {// only used for Virtuality, so only need to copy moves
+    SceneIB clone = null;
+    try {
+      clone = new SceneIB();
+      if (this.moves != null) {
+        clone.moves = new Move[this.moves.length];
+        for (int i = 0; i < moves.length; i++) {  clone.moves[i] = (Move)this.moves[i].clone(); }
+      }
+    } catch (Exception e) { e.printStackTrace(); }
+    return clone;
+  }
+
+  protected Actor[] actors = new Actor[] {};
+  protected SceneAction[] actions = new SceneAction[] {};
+  protected synchronized void registerSA(Actor actor, SceneAction action) {
+    int index = -1;
+    for (int i = 0; i < actors.length; i++) { if (actors[i].equals(actor)) { index = i; break; } }
+    if (index == -1) {
+      Actor[] newActors = new Actor[actors.length + 1];
+      SceneAction[] newActions = new SceneAction[actors.length + 1];
+      for (int i = 0; i < actors.length; i++) { newActors[i] = actors[i]; newActions[i] = actions[i]; }
+      newActors[newActors.length - 1] = actor;
+      newActions[newActors.length - 1] = action;
+      actors = new Actor[newActors.length];
+      actions = new SceneAction[newActors.length];
+      for (int i = 0; i < actors.length; i++) { actors[i] = newActors[i]; actions[i] = newActions[i]; }
+    } else {
+      actions[index] = action;
+    }
+  }
+  public void destroySceneAction(Actor actor) throws java.rmi.RemoteException {
+    SceneAction action = null;
+    for (int i = 0; i < actors.length; i++) { if (actors[i].equals(actor)) { action = actions[i]; break; } }
+    if (action == null) { System.out.println("Scene.destroySceneAction: Actor not known"); }
+    else { action.dispose(); }
+  }
+
+
+  //---------------------------------- Body-methods ----------------------------------------
+  public void addAvatar(Avatar avatar) throws RemoteException {}
+  public void removeAvatar(Avatar avatar) throws RemoteException {}
+  public FuSpace getState() throws RemoteException { return null; }
+  public int getGeometryID() throws RemoteException { return 0; }
+  public int getAppearanceID() throws RemoteException { return 0; }
+  public FuSpace removeChild(BodyRemote child) throws RemoteException { return null; }
+  public Body.StateAndAvatar addChild(BodyRemote child, FuSpace state) throws RemoteException { return null; }
+  public void setParent(BodyRemote parent) throws RemoteException {}
+}

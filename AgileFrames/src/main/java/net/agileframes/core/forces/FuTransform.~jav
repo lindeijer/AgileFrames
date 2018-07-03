@@ -1,0 +1,10 @@
+package net.agileframes.core.forces;
+
+public abstract class FuTransform implements Cloneable {
+  public abstract FuSpace transform (FuSpace point);
+  public abstract FuSpace inverseTransform (FuSpace point);
+
+  public abstract FuTransform transformT1T2 (FuTransform transform1, FuTransform transform2);
+
+  public Object clone() throws CloneNotSupportedException { return super.clone(); }  
+}

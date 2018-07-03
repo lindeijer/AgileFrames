@@ -6,15 +6,15 @@ import net.jini.core.lookup.ServiceID;
 import java.rmi.Remote;
 
 /**
-A server should extend and implement this remote interface. Such an interface
+<b>A server should extend and implement this remote interface. </b><p>Such an interface
 would identify the server as an agileframes-server and provide remote methods
 service-proxies need to communicate the back-end protocol with their server.
 
-@see net.agileframes.server.ServerImplBase
+@see net.agileframes.server.ServerIB
 
  * @since AgileFrames 1.0.0
- * @author Lindeijer, Evers
- * @version 0.0.1
+ * @author  D.G. Lindeijer
+ * @version 0.1
 
 */
 
@@ -40,7 +40,7 @@ public interface Server extends Remote {
   ServiceID getServiceID() throws RemoteException;
 
   /**
-  Gets a new serviceID for a service to be provided to a client. 
+  Gets a new serviceID for a service to be provided to a client.
   @param serialVersionUID of the class of the service now calling back.
   @return serviceID the service should use.
   */

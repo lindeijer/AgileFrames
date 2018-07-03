@@ -1,93 +1,34 @@
 package net.agileframes.traces.ticket;
-
-import net.agileframes.traces.SceneAction;
+import net.agileframes.core.traces.SceneAction;
 import net.agileframes.core.traces.BlockException;
 import net.agileframes.core.traces.ReserveDeniedException;
 import net.agileframes.core.traces.Ticket;
-import net.agileframes.traces.Semaphore;
-
 import net.jini.core.transaction.Transaction;
 import net.jini.core.transaction.server.TransactionManager;
 import java.rmi.*;
-// import net.agileframes.TRACES.VIEW.TicketPainter;
-
-public class CollectTicket implements Ticket  { //  extends SetTicket
-
-  private static Semaphore cTsem;
-  private static PrimeTicket cTt;
-
-  static {
-    try {
-      cTsem = new Semaphore("CT-static-Sem");
-      cTt = new PrimeTicket(null,cTsem);
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
-  }
-
-  PrimeTicket[] subTickets;
-
-  public CollectTicket(PrimeTicket[] tickets,PrimeTicket ticket) {
-    subTickets = new PrimeTicket[tickets.length+1];
-    for (int i=0;i<tickets.length;i++)  {
-      subTickets[i] =  tickets[i];
-    }
-    subTickets[tickets.length] = ticket;
-  }
-
-  public CollectTicket(PrimeTicket[] tickets) {
-    subTickets = tickets;
-  }
-
-  public void insist() throws BlockException {
-    cTt.insist();
-    for (int i=0;i<subTickets.length;i++)  {
-      if (subTickets[i] != null) { subTickets[i].reserve(); }
-    }
-    cTt.free();
-    for (int i=0;i<subTickets.length;i++)  {
-      if (subTickets[i] != null) { subTickets[i].insist(); }
-    }
-  }
-
-  //////////////////////////////////////////////
-
-  public void reserve(){
-    System.out.println("CT.reserve not implmented, will exit");
-    System.exit(1);
-  }
-
-  public boolean attempt() {
-    System.out.println("CT.reserve not implmented, will exit");
-    System.exit(1);
-    return false;
-  }
-
-  public void free() {
-    System.out.println("CT.free not implmented, will exit");
-    System.exit(1);
-  }
-
-  ///////////////////////////////////////////
-
-  public int snip(){ return -1; }
-  public void reserve(Transaction txn){}
-  public boolean reserve(Ticket super_ticket,int i){ return false; }
-  public void setAssigned(Ticket super_ticket,int i){}
-
-}
-
-/*
-
+/**
+ * <b>The CollectTicket makes it possible to reserve on a couple of tickets at the same time.</b>
+ * <p>
+ * The API-documentation is not optimal.
+ * @see     SetTicket
+ * @author  D.G. Lindeijer
+ * @version 0.1
+ */
+public class CollectTicket extends SetTicket {
   private CollectTicket(Ticket[] tickets) {
     this("Anonymous",null,tickets);
   }
-
   private CollectTicket(String name,Ticket[] tickets) {
     this(name,null,tickets);
   }
-
+  /**
+   * Default Constructor.<p>
+   * Calls super.
+   * @see   SetTicket#SetTicket(String,SceneAction,Ticket[])
+   * @param name
+   * @param scene_action
+   * @param tickets
+   */
   public CollectTicket(String name,
                        SceneAction scene_action,
                        Ticket[] tickets) {
@@ -97,10 +38,10 @@ public class CollectTicket implements Ticket  { //  extends SetTicket
   /// implementation of Ticket
 
   /**
-  The collect-ticket must attempt to reserve its claim with all the semaphores
-  involved if possible, it does so in a sequential manner.
-  A remote-exception is considered a failed attempt.
-  /
+   * The collect-ticket must attempt to reserve its claim with all the semaphores
+   * involved.<p>If possible, it does so in a sequential manner.
+   * A remote-exception is considered a failed attempt.
+   */
   public boolean _attempt() throws BlockException { // state == INITIAL
     boolean isassigned = true;
     int i=0;
@@ -110,15 +51,16 @@ public class CollectTicket implements Ticket  { //  extends SetTicket
         if (!isassigned) { continue; }
       }
     }
-    catch (/*Remote/Exception re) { /* what did i delete ? / }
+    catch (/*Remote*/Exception re) { /* what did i delete ? */ }
     return isassigned;
   }
 
   /**
-  top-level transaction starts, this is the client.
-  the transaction is initially null.
-  The state is INITIAL.
-  /
+   * The atomic reserve.<p>
+   * Top-level transaction starts, this is the client.
+   * the transaction is initially null.
+   * The state is INITIAL.
+   */
   public boolean _reserve() throws BlockException {
     // do the atomic reserve or fail or BlockException.
     reserve(sub_tickets);
@@ -129,7 +71,7 @@ public class CollectTicket implements Ticket  { //  extends SetTicket
         this.assigned_sub_tickets[i] = sub_tickets[i].reserve(this,i);
       }
     }
-    catch (/*Remote/Exception re) {
+    catch (/*Remote*/Exception re) {
       System.out.println(toString() +
         "could not create callback structure: RemoteException " +
         "(Am I no longer connected?)" );
@@ -144,7 +86,8 @@ public class CollectTicket implements Ticket  { //  extends SetTicket
   }
 
   /**
-  /
+   * Insists on this CollectTicket.<p>
+   */
   public void  _insist() { // state == RESERVING
     int i=0;
     //System.out.println(getIdentity() + " is starting to insist");
@@ -167,7 +110,8 @@ public class CollectTicket implements Ticket  { //  extends SetTicket
   }
 
   /**
-  /
+   * Frees this CollectTicket.<p>
+   */
   public void _free() throws BlockException { // state == ASSIGNED
     int i=0;
     try {
@@ -186,8 +130,6 @@ public class CollectTicket implements Ticket  { //  extends SetTicket
     }
   }
 
-  /**
-  /
   public int _snip() {
     int i=0;
     try {
@@ -213,12 +155,13 @@ public class CollectTicket implements Ticket  { //  extends SetTicket
   ///////////////////////////////////////////////////////////////////
 
   /**
-  The collect-tickets must reserve its claim with all the semaphores involved,
-  the operation is governed by the transaction.
-  This operation preceeds reserve(Ticket,int).
-  ReserveDeniedException for any exception, this will trigger a retry
-  at the source of the transaction.
-  /
+   * The collect-tickets must reserve its claim with all the semaphores involved,
+   * the operation is governed by the transaction.<p>
+   * This operation preceeds reserve(Ticket,int).
+   * ReserveDeniedException for any exception, this will trigger a retry
+   * at the source of the transaction.
+   * @param tx  the transaction
+   */
   protected void _reserve(Transaction tx)
     throws ReserveDeniedException,BlockException {
     // this is in some way a sub-ticket of a collect ticket.
@@ -236,9 +179,7 @@ public class CollectTicket implements Ticket  { //  extends SetTicket
     }
   }
 
-  /**
-  RemoteExceptions must be deals with. RE-RE-RE TRY;
-  /
+  //RemoteExceptions must be dealt with. RE-RE-RE TRY;
   protected boolean _reserve(net.agileframes.core.traces.Ticket super_ticket,int index)
       throws BlockException {
     // parameters are irrelevant.
@@ -274,28 +215,22 @@ public class CollectTicket implements Ticket  { //  extends SetTicket
 
 
   /**
-  /
-  public void setAssigned(net.agileframes.core.traces.Ticket sub_ticket,int i) {
-    if (sub_tickets[i] != sub_ticket) {
+  */
+  public void setAssigned(net.agileframes.core.traces.Ticket sub_ticket,int index) {
+    if (sub_tickets[index] != sub_ticket) {
       System.out.println(toString() +
-      " got a callback by sub-ticket " + i + " who is spoofing");
+      " got a callback by sub-ticket " + index + " who is spoofing");
       System.exit(1);
     }
-    assigned_sub_tickets[i] = true;
+    assigned_sub_tickets[index] = true;
     boolean isassigned = true;
     for (int j=0;j<sub_tickets.length;j++) {
       isassigned = isassigned && assigned_sub_tickets[j];
     }
     if (isassigned) setState(ASSIGNED);
     // System.out.println(getIdentity() +
-    //  " got a callback by sub-ticket " + i);
+    //  " got a callback by sub-ticket " + index);
   }
 
   ////////////////////////////////////////////////////////////////////////
-  /*
-  protected TicketPainter _getTicketPainter() {
-    return new TicketPainter(this);
-  }
-  */
-
-
+}

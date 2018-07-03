@@ -1,0 +1,18 @@
+package com.agileways.ui.scene;
+
+public class SemaphoreProperties implements java.io.Serializable {
+  public double x = 0;
+  public double y = 0;
+  public double width = 10;
+  public double height = 10;
+  public int shape = 0; // 0 = rectangle; 1 = oval
+
+  public SemaphoreProperties() {}
+  public SemaphoreProperties(double x, double y, double width, double height, int shape) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.shape = shape;
+  }
+}

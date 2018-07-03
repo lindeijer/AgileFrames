@@ -1,0 +1,39 @@
+package net.agileframes.forces.xyspace.trajectories;
+
+import net.agileframes.core.forces.FuTrajectory;
+import net.agileframes.core.forces.FuSpace;
+import net.agileframes.forces.xyspace.XYSpace;
+import net.agileframes.forces.xyspace.XYTransform;
+
+public class XYStraightLine extends FuTrajectory {
+  private double length = Double.NaN;
+
+  public XYStraightLine(double length, XYTransform transform) {
+    this(length, transform, 0.5, 2.5, 0.1, 0.4);
+  }
+  public XYStraightLine(double length, XYTransform transform,
+                        double pilotAlpha, double pilotBeta, double speedGamma, double speedMu) {
+    this.length = length;
+    this.transform = transform;
+
+    this.pilotAlpha = pilotAlpha;
+    this.pilotBeta = pilotBeta;
+    this.speedGamma = speedGamma;
+    this.speedMu = speedMu;
+
+    this.evolutionEnd = length;
+
+    FuSpace endPoint = new XYSpace(length, 0, 0);
+    extension = endPoint.createConnectionPath(new XYSpace(length + 1, 0, 0));
+  }
+
+  public FuSpace getTrajectPoint(double u) {
+    if (u > evolutionEnd) { return transform.transform( extension.getConnectionPoint(u - evolutionEnd) ); }
+    return transform.transform(new XYSpace(u, 0, 0));
+  }
+
+  public double getProfileSpeed(double u) {
+    if (u > evolutionEnd) { return 0; }
+    return 1;
+  }
+}
