@@ -5,7 +5,7 @@
 
 	<groupId>net.agileframes</groupId>
 	<artifactId>agileframes</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 
 	<name>agileframes</name>
 	<description>agileframes (Jumbo)</description>
