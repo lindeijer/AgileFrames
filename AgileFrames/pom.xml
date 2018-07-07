@@ -12,9 +12,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jsk.version>2.2.3</jsk.version>
+		<jsk.version>2.2.2</jsk.version>
 	</properties>
-
 
 	<dependencyManagement>
 		<dependencies>
