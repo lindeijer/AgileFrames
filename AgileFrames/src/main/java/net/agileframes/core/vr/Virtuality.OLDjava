@@ -1,7 +1,0 @@
-package net.agileframes.core.vr;
-import net.agileframes.core.server.Server;
-import javax.media.j3d.Node;
-
-public interface Virtuality extends Server {
-  public void add(Node node) throws java.rmi.RemoteException;
-}

@@ -1,5 +1,0 @@
-package net.agileframes.core.traces;
-import java.rmi.Remote;
-
-public interface PrimeTicketRemote extends Remote {
-} 

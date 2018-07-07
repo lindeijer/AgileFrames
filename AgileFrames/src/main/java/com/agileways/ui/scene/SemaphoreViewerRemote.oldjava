@@ -1,5 +1,0 @@
-package com.agileways.ui.scene;
-
-public interface SemaphoreViewerRemote extends java.rmi.Remote {
-  public void modelChanged() throws java.rmi.RemoteException;
-}
