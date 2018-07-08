@@ -5,12 +5,16 @@ import java.io.*;
 import java.net.InetAddress;
 import java.util.Properties;
 import java.rmi.RemoteException;
+
+import net.jini.core.entry.Entry;
 // net.jini
 import net.jini.core.lookup.*;
+import net.jini.lookup.entry.Name;
 // net.agileframes
 import net.agileframes.core.traces.Actor;
 import net.agileframes.core.forces.FuSpace;
 import net.agileframes.forces.MachineProxy;
+import net.agileframes.forces.TransformEntry;
 import net.agileframes.forces.MachineIB;
 import net.agileframes.core.forces.MachineRemote;
 import net.agileframes.traces.ActorProxy;
@@ -19,6 +23,7 @@ import net.agileframes.server.AgileSystem;
 import net.agileframes.forces.mfd.*;
 import com.agileways.vr.agv.AgvAvatarFactory;
 import net.agileframes.core.vr.AvatarFactory;
+import net.agileframes.core.vr.SceneAvatarFactory;
 
 import com.agileways.miniworld.lps.RemoteStateListener;
 import com.agileways.miniworld.lps.RemoteDistributor;
@@ -46,7 +51,7 @@ public class MiniAgv extends MachineIB implements RemoteStateListener {
   public final static int EXTERNAL_AND_ODOMETRIC = 4;
   public final static int EXTERNAL_AND_SIMULATED = 5;
   public static int STATEFINDER_TYPE = 0;
-  public static int MECHATRONICS_TYPE = 0;
+  public static int MECHATRONICS_TYPE = 1;
 
   //---------------- Constructor ----------------------
   public MiniAgv(String name, boolean isAgileSystemMute, ServiceID serviceID) throws RemoteException {
@@ -117,11 +122,11 @@ public class MiniAgv extends MachineIB implements RemoteStateListener {
     this.start();
 
     ServiceID actorID = AgileSystem.getServiceID();
-    actor = new ActorIB(actorID, this, "actor"+agvNumber);
+    actor = new ActorIB(actorID, (MachineRemote)UnicastRemoteObject.toStub(this), "actor"+agvNumber);
     avatarFactory = new AgvAvatarFactory(agvNumber);
 
     if (!isAgileSystemMute) {
-      machineProxy = new MachineProxy(this, avatarFactory);
+      machineProxy = new MachineProxy((MachineRemote)UnicastRemoteObject.toStub(this), avatarFactory);
       actorProxy = new ActorProxy(actor, serviceID);
     } else {
       machineProxy = null;
@@ -206,7 +211,7 @@ public class MiniAgv extends MachineIB implements RemoteStateListener {
   }
 
   public FuSpace getState() throws RemoteException {
-//    System.out.println("getState: "+stateFinder.getObservedState().toString());
+    System.out.println("getState: "+stateFinder.getObservedState().toString());
     return stateFinder.getObservedState();
   }
   public int getMachineNumber() throws RemoteException { return agvNumber; }

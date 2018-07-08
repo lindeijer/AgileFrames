@@ -47,7 +47,7 @@ public class MiniAgvStateFinder extends StateFinderIB {
   //----------- Classes ---------------
   public class MiniAgvLocalInformation implements LocalInformation {
     //-- Attributes --
-    private FuSpace currentState = null;//new XYASpace(0,0,0);
+    private FuSpace currentState = new XYASpace(0,0,0); // null?
     private FuSpace prevState = null;
     private long timeStamp, prevTimeStamp;
     private double dT = 0;
@@ -97,7 +97,7 @@ public class MiniAgvStateFinder extends StateFinderIB {
           }
           break;
       }
-//      if (currentState != null) { System.out.println("curState = "+currentState.toString()); } else {System.out.println("curState = null");}
+      if (currentState != null) { System.out.println("curState = "+currentState.toString()); } else {System.out.println("curState = null");}
       return currentState;
     }
     //--------- Simulated -----

@@ -78,7 +78,7 @@ public class Virtuality3D implements RemoteEventListener, Virtuality {
    * @see   net.agileframes.server.AgileSystem#registerServiceListener(ServiceTemplate,RemoteEventListener)
    */
   public Virtuality3D() throws RemoteException {
-    UnicastRemoteObject.exportObject(this);//needed for RemoteEventListener
+    UnicastRemoteObject.exportObject(this,0);//needed for RemoteEventListener
     AgileSystem.registerServiceListener(bodyTemplate, this);
 
     //GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
@@ -294,7 +294,7 @@ public class Virtuality3D implements RemoteEventListener, Virtuality {
   private Avatar3D[] avatars = new Avatar3D[MAX_AVATARS];
   private int registeredAvatars = 0;
   private void addAvatar(ServiceItem serviceItem) {
-    System.out.println("New service found, avatar will be added");
+    System.out.println("New service found, avatar will be added: serviceItem="+serviceItem);
     AvatarFactory factory = (AvatarFactory)serviceItem.attributeSets[1];
     // we are virtuality3D, so we need avatar3D
     Avatar3D avatar = (Avatar3D)factory.getAvatar(getClass(), (Body)serviceItem.service);

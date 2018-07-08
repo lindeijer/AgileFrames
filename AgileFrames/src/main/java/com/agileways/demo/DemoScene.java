@@ -52,7 +52,7 @@ public class DemoScene extends SceneIB {
   public void initialize() {
     try {
       // Transform
-      this.transform = new XYATransform(-60*0.8, -60*0.8 ,0);
+      this.transform = new XYATransform(0,0 ,0); // new XYATransform(-60*0.8, -60*0.8 ,0);
 
       // Semaphores:
       this.semaphores = new Semaphore[totalSems];

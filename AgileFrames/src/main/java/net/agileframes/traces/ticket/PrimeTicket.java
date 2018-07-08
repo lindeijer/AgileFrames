@@ -64,7 +64,11 @@ public class PrimeTicket extends TicketIB {
     super(name,scene_action);
     this.semaphore = s;
     //// moved next statement to _reserve 31MAY2001
-    /**/ primeTicketRemote = new PrimeTicketRemoteImpl(this);//its back again
+    try {
+		primeTicketRemote = new PrimeTicketRemoteImpl(this); //its back again
+	} catch (RemoteException e) {
+		System.out.println("RemoteException in PrimeTicket (init) : "+e.getMessage());
+	}
     //this.semName=semaphore.getName();
     this.claim = claim;
     this.threshold = threshold;
@@ -92,7 +96,11 @@ public class PrimeTicket extends TicketIB {
     //// because ptr should have a reference to the (eventually cloned & serialized, on the side of the agv)
     //// primeticket that performed the reserve-operation, rather than to the original
     //// primeticket, which is at the side of the scene-server.
-    primeTicketRemote = new PrimeTicketRemoteImpl(this);
+    try {
+		primeTicketRemote = new PrimeTicketRemoteImpl(this); //its back again
+	} catch (RemoteException e) {
+		System.out.println("RemoteException in PrimeTicket (_reserve) : "+e.getMessage());
+	}
     // state == INITIAL
     boolean result = false;
     try { result = semaphore.reserve(this); }
@@ -175,7 +183,11 @@ public class PrimeTicket extends TicketIB {
       throws ReserveDeniedException {
     if (DEBUG) System.out.println(System.currentTimeMillis()+"  *D* PrimeTicket ##3 _reserve() called in "+toString());
 
-    primeTicketRemote = new PrimeTicketRemoteImpl(this);
+    try {
+		primeTicketRemote = new PrimeTicketRemoteImpl(this); //its back again
+	} catch (RemoteException e) {
+		System.out.println("RemoteException in PrimeTicket (_reserve(txn)) : "+e.getMessage());
+	}
     // state == INITIAL
     try { semaphore.reserve(tx,this); }
     catch (java.rmi.RemoteException e) {

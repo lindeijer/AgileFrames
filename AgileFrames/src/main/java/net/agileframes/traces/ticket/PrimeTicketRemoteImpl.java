@@ -1,5 +1,7 @@
 package net.agileframes.traces.ticket;
 import net.agileframes.traces.ticket.PrimeTicket;
+
+import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import com.objectspace.jgl.Array;
 /**
@@ -9,7 +11,7 @@ import com.objectspace.jgl.Array;
  * @author  D.G. Lindeijer, H.J. Wierenga
  * @version 0.1
  */
-public final class PrimeTicketRemoteImpl implements PrimeTicketRemote {
+public final class PrimeTicketRemoteImpl extends UnicastRemoteObject implements PrimeTicketRemote {
   //-- Attributes --
   private PrimeTicket primeTicket = null;
   /**
@@ -17,11 +19,11 @@ public final class PrimeTicketRemoteImpl implements PrimeTicketRemote {
    * Exports this object using UnicastRemoteObject.exportObject.
    * @see   PrimeTicket
    * @param primeTicket the prime-ticket to which this primeticket-remote belongs
+ * @throws RemoteException 
    */
-  public PrimeTicketRemoteImpl(PrimeTicket primeTicket) {
+  public PrimeTicketRemoteImpl(PrimeTicket primeTicket) throws RemoteException {
+	super();
     this.primeTicket = primeTicket;
-    try { UnicastRemoteObject.exportObject(this); }
-    catch (Exception e) { e.printStackTrace();  }
   }
 
   //-- Methods --
