@@ -63,7 +63,7 @@ public class Manoeuvre implements Cloneable, Serializable {
   public double cycleTime = Double.NaN;
 
   private static double projectionErrorMargin = 0.01; // where to declare ?//was : 0.1
-  private double speedMultiplier = 0;
+  private double speedMultiplier = 1.0; // init with 0.0?
   private double calcEvolution = 0;
   private double calcDeviation = 0;
   private double calcSpeed = 0;

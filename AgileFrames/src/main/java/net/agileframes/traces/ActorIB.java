@@ -1,5 +1,6 @@
 package net.agileframes.traces;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 import net.agileframes.core.forces.FuSpace;
 import net.agileframes.core.forces.MachineRemote;
@@ -10,6 +11,7 @@ import net.agileframes.core.traces.NotTrustedException;
 import net.agileframes.core.traces.Scene;
 import net.agileframes.core.traces.SceneAction;
 import net.agileframes.core.traces.Ticket;
+import net.agileframes.forces.MachineIB;
 import net.agileframes.server.AgileSystem;
 import net.agileframes.server.ServerIB;
 import net.agileframes.services.ActionJob;
@@ -27,7 +29,7 @@ import net.jini.core.lookup.ServiceTemplate;
  */
 public class ActorIB extends ServerIB implements Actor, Runnable {
   //------------------------------- Attributes -----------------------------
-  private MachineRemote machine = null;
+  private MachineIB machine = null;
   private SceneAction currentSceneAction = null;
   private SceneAction nextSceneAction = null;
   private Job currentJob = null;
@@ -54,7 +56,7 @@ public class ActorIB extends ServerIB implements Actor, Runnable {
    * @param machine the machine which belongs to this actor, may or may not be remote
    * @param name    the name of this actor
    */
-  public ActorIB(ServiceID actorID, MachineRemote machine, String name) throws RemoteException {
+  public ActorIB(ServiceID actorID, MachineIB machine, String name) throws RemoteException {
     super(name, actorID);
     this.machine = machine;
     Thread jobInterpreterThread = new Thread("JobInterpreterThread@"+name) {
@@ -87,10 +89,10 @@ public class ActorIB extends ServerIB implements Actor, Runnable {
     ServiceTemplate sceneTemplate = new ServiceTemplate(null, sceneClass, null);
     scene = (Scene)AgileSystem.lookup(sceneTemplate);// any scene
     if (scene == null) {
-      System.out.println("Actor cannot find Scene. ");
-      System.out.println("The Scene should have been made available for the JLS.");
+      System.out.println("ActorIB.downloadScene: Actor cannot find Scene. ");
+      System.out.println("ActorIB.downloadScene: The Scene should have been made available for the JLS.");
     } else {
-      System.out.println("Scene has been found.");
+      System.out.println("ActorIB.downloadScene: Scene has been found.");
       try {
         /** TEMP - HW**/
         FuSpace p = machine.getState();
@@ -98,17 +100,19 @@ public class ActorIB extends ServerIB implements Actor, Runnable {
           synchronized(this) { this.wait(1000); }
           p = machine.getState();
         }//wait for the machine to be seen by the camera
-        System.out.println("p ="+p.toString());
+        System.out.println("ActorIB.downloadScene: p ="+p.toString());
         lp = scene.whereAmI(p);
-        System.out.println("logistic position = "+lp.toString());
+        System.out.println("ActorIB.downloadScene: logistic position = "+lp);
         this.getProperties();//to be sure props is not null
         props.destination = lp.getName();
         props.origin = "start-up";
 
-        SceneAction sa = lp.scene.join(this, lp);
+        Actor actorRemote = (Actor)UnicastRemoteObject.toStub(this);
+        SceneAction sa = lp.scene.join(actorRemote, lp);
+        System.out.println("ActorIB.downloadScene: join scene-action="+sa);
         sa.setActor(this);
         sa.execute();
-        System.out.println("Actor: FINISHED!!!!");
+        System.out.println("ActorIB.downloadScene:  FINISHED!!!!");
         exitTicket = sa.getExitTicket();
 
         props.origin = props.destination;
@@ -181,6 +185,7 @@ public class ActorIB extends ServerIB implements Actor, Runnable {
 
       synchronized(this) { this.notify(); }// to wake up run()
     }
+    if (DEBUG) System.out.println("*D* ActorIB *** jobInterpreterCycle *** ENDED");
   }
 
   /**
@@ -226,7 +231,17 @@ public class ActorIB extends ServerIB implements Actor, Runnable {
    */
   public String getName() { return name; }
   //inherited from Actor
-  public MachineRemote getMachine() { return machine; }
+  
+  public MachineRemote getMachine() { 
+		return this.machine; }
+  
+  public MachineRemote getMachineRemote() { try {
+	return (MachineRemote)UnicastRemoteObject.exportObject(machine,0);
+} catch (RemoteException e) {
+	e.printStackTrace();
+	return null;
+} }
+  
   private ActorProperties props = null;
   //inherited from Actor
   public Properties getProperties() {

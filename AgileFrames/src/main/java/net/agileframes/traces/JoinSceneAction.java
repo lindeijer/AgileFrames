@@ -5,6 +5,7 @@ import net.agileframes.core.traces.Scene;
 import net.agileframes.core.traces.Ticket;
 import net.agileframes.core.traces.LogisticPosition;
 import net.agileframes.traces.ticket.PrimeTicket;
+import net.agileframes.forces.JoinMove;
 import net.agileframes.forces.flags.FinishedFlag;
 import net.agileframes.forces.precautions.TimedStop;
 import net.agileframes.core.forces.Precaution;
@@ -71,18 +72,19 @@ public class JoinSceneAction extends SceneAction {
       //System.out.println("JOINSA: insist done");
       double dev = Double.MAX_VALUE;
       do {
+
         Move move0 = (Move)moves[0].clone();
         Move move1 = (Move)moves[1].clone();
         move0.run(new Ticket[] {} );
         //System.out.println("JOINSA: move 0 running");
-        watch(move0.getSign(0));
+          watch(move0.getSign(0));
         //System.out.println("JOINSA: mov0.sign 0 received");
         move1.run(new Ticket[] {} );
         //System.out.println("JOINSA: move 1 running");
         watch(move1.getSign(0));
         //System.out.println("JOINSA: mov1.sign 0 received");
         dev = move1.getManoeuvre().getCalcDeviation();
-        //System.out.println("deviation = "+dev);
+        System.out.println("JoinSceneAction.sceneActionScript: dev="+dev);
       } while (dev > 2);
     } catch (Exception e) {
       System.out.println("Exception in JoinSceneAction: The scene-action will be aborted.");
@@ -92,76 +94,10 @@ public class JoinSceneAction extends SceneAction {
     signs[0].broadcast();
     //System.out.println("JOINSA: action done!");
   }
-
-}
-
-/**
- * <b>Pre-defined Move to join a Scene.</b>
- * <p>
- * @author  H.J. Wierenga
- * @version 0.1
- */
-class JoinMove extends Move {
-  //for nr, see JoinManoeuvre
-  JoinMove(FuTransform t, FuSpace p, int nr) {
-    super(t);
-
-    this.manoeuvre = new JoinManoeuvre(transform, p, nr);
-    this.signs = new Sign[1];
-    signs[0] = new Sign();
-  }
-
-  /** The script. */
-  public void moveScript() {
-    try {
-      //System.out.println("JOINMOVE: about to start exec");
-      manoeuvre.startExecution();
-      //System.out.println("JOINMOVE: about to watch flag");
-      watch(manoeuvre.getFlag(0));
-      //System.out.println("JOINMOVE: about to broadcast");
-      signs[0].broadcast();
-      //System.out.println("JOINMOVE: sign broadcasted");
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+  
+  public String toString() {
+	  return "JoinSceneAction[lp="+lp+"]";
   }
 
 }
 
-/**
- * <b>Pre-defined Manoeuvre to join a Scene.</b>
- * <p>
- * @author  H.J. Wierenga
- * @version 0.1
- */
-class JoinManoeuvre extends Manoeuvre {
-  double distance = 1.0;
-  // int value nr is introduced to indicate in which direction to drive
-  // nr = 0 -> from point p, distance m
-  // nr = 1 -> to point p, distance m
-  JoinManoeuvre(FuTransform t, FuSpace p, int nr) {
-    super(t, 25, 5, 10, 0.5);
-    //-- Defining Trajectory --
-    FuTrajectory[] compTraj = new FuTrajectory[1];
-
-    if (nr == 0) {
-      compTraj[0] = new GoStraight(distance, new XYATransform(0, 0, 0));//, 0, 0, 0.75, 0.25);
-    } else {
-      compTraj[0] = new GoStraight(distance, new XYATransform(0, 0, Math.PI));//, 0, 0, 0.75, 0.25);
-      p = new XYASpace(((XYASpace)p).getX() + distance, ((XYASpace)p).getY(), ((XYASpace)p).getAlpha());
-    }
-
-    this.trajectory = new FuTrajectory(
-      compTraj,
-      new XYATransform((XYATransform)t, new XYATransform((XYASpace)p))
-    );
-
-    //-- Defining Flags --
-    this.flags = new Flag[1];
-    // standard
-    flags[0] = new FinishedFlag(this);
-
-    this.precautions = new Precaution[0];
-    //precautions[0] = new TimedStop(this, 10.0, (2.0/3.0)*maxDeceleration);
-  }
-}

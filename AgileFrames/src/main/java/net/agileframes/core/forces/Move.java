@@ -127,9 +127,9 @@ public abstract class Move extends ActionIB implements Cloneable, Serializable {
   protected synchronized void watch(Flag[] flags) {
     boolean raised = false;
     for (int i = 0; i < flags.length; i++) {
-      flags[i].addListener(this);
+    	  flags[i].addListener(this);
       if (!raised) { raised = flags[i].isRaised();}
-    }
+      }
     while (!raised) {
       try{ synchronized(this) { this.wait();  }  }
       catch (Exception e) {

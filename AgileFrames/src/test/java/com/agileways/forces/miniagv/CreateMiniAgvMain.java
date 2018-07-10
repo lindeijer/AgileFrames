@@ -2,6 +2,7 @@ package com.agileways.forces.miniagv;
 
 import java.rmi.RemoteException;
 
+import net.agileframes.forces.xyaspace.XYASpace;
 import net.jini.core.lookup.ServiceID;
 
 public class CreateMiniAgvMain {
@@ -15,7 +16,8 @@ public class CreateMiniAgvMain {
 		String name = "boogaloo";
 		boolean isAgileSystemMute = false;
 		ServiceID serviceID = null;
-		new MiniAgv(name, isAgileSystemMute, serviceID);
+		MiniAgv.STATEFINDER_TYPE = MiniAgv.SIMULATED;
+		MiniAgv miniAgv = new MiniAgv(name, isAgileSystemMute, serviceID);
 	}
 	
 

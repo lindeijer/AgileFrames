@@ -443,7 +443,6 @@ public class SceneIB extends ServerIB implements Scene/* , Cloneable */ {
 
 	// inherited from Scene
 	public LogisticPosition getClosestLogisticPosition(FuSpace p) throws java.rmi.RemoteException {
-		System.out.println("getClosestLP called");
 		double minDist = Double.MAX_VALUE;
 		LogisticPosition lp = null;
 		try {
@@ -477,6 +476,7 @@ public class SceneIB extends ServerIB implements Scene/* , Cloneable */ {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println("getClosestLP: p="+p+",lp="+lp);
 		return lp;// can be NULL
 	}
 
@@ -496,7 +496,7 @@ public class SceneIB extends ServerIB implements Scene/* , Cloneable */ {
 	// inherited from scene
 	public synchronized SceneAction join(Actor actor, LogisticPosition lp) throws java.rmi.RemoteException {
 		// return the sa to the requested lp
-		System.out.println("join called");
+		System.out.println("SceneIB.join: actor="+actor+",lp="+lp);
 		FuSpace p = actor.getMachine().getState();
 		// create sa that claims right semaphore
 		SceneAction sa = new JoinSceneAction(lp);

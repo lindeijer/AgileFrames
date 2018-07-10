@@ -54,6 +54,9 @@ public abstract class Flag implements Cloneable, Serializable {
    * @see #addListener(Object)
    */
   protected void raise() {
+	  if (this.raised) {
+		  return;
+	  }
     this.raised = true;
     for (int i = 0; i < listenerCounter; i++) {
       synchronized (listenerList[i]) { listenerList[i].notifyAll(); }

@@ -97,11 +97,14 @@ public class MiniAgvStateFinder extends StateFinderIB {
           }
           break;
       }
-      if (currentState != null) { System.out.println("curState = "+currentState.toString()); } else {System.out.println("curState = null");}
+      // if (currentState != null) { System.out.println("curState = "+currentState.toString()); } else {System.out.println("curState = null");}
       return currentState;
     }
     //--------- Simulated -----
     private FuSpace getSimulatedState() {
+      if (externalUpdate) {
+    		return getExternalState(); // sets externalUpdate=false
+      }
       double speed = physicalDriver.getInducedSpeed();
       double distance = dT * speed; // acceleration is zero in interval
       //distance /= MiniAgvConfig.scale;// not here, but in physDriver

@@ -27,11 +27,8 @@ public class FinishedFlag extends Flag {
    * </blockquote></code>
    */
   public void evaluate() {
+	if (isRaised()) return;
     if (manoeuvre.getCalcEvolution() >= manoeuvre.getTrajectory().getEvolutionEnd()) { raise(); }
-  }
-
-  public String toString() {
-    return "FinishedFlag raised="+isRaised()+", current evolution = "+manoeuvre.getCalcEvolution();
   }
 
 }

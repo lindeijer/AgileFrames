@@ -45,12 +45,13 @@ public class MiniAgv extends MachineIB implements RemoteStateListener {
   private static boolean storedSuccesfully = false;
   private RemoteDistributor distributor = null;
 
+  public final static int PARALYSED = 0;
   public final static int SIMULATED = 1;
   public final static int ODOMETRIC = 2;
   public final static int EXTERNAL = 3;
   public final static int EXTERNAL_AND_ODOMETRIC = 4;
   public final static int EXTERNAL_AND_SIMULATED = 5;
-  public static int STATEFINDER_TYPE = 0;
+  public static int STATEFINDER_TYPE = PARALYSED; 
   public static int MECHATRONICS_TYPE = 1;
 
   //---------------- Constructor ----------------------
@@ -122,12 +123,12 @@ public class MiniAgv extends MachineIB implements RemoteStateListener {
     this.start();
 
     ServiceID actorID = AgileSystem.getServiceID();
-    actor = new ActorIB(actorID, (MachineRemote)UnicastRemoteObject.toStub(this), "actor"+agvNumber);
+    actor = new ActorIB(actorID, this, "actor"+agvNumber);
     avatarFactory = new AgvAvatarFactory(agvNumber);
 
     if (!isAgileSystemMute) {
       machineProxy = new MachineProxy((MachineRemote)UnicastRemoteObject.toStub(this), avatarFactory);
-      actorProxy = new ActorProxy(actor, serviceID);
+      actorProxy = new ActorProxy((Actor)UnicastRemoteObject.toStub(actor), serviceID);
     } else {
       machineProxy = null;
       actorProxy = null;
@@ -211,7 +212,7 @@ public class MiniAgv extends MachineIB implements RemoteStateListener {
   }
 
   public FuSpace getState() throws RemoteException {
-    System.out.println("getState: "+stateFinder.getObservedState().toString());
+    // System.out.println("getState: "+stateFinder.getObservedState().toString());
     return stateFinder.getObservedState();
   }
   public int getMachineNumber() throws RemoteException { return agvNumber; }

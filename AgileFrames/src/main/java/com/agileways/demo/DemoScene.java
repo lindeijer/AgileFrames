@@ -75,19 +75,19 @@ public class DemoScene extends SceneIB {
       // Logistic Positions:
       double l = DemoParameters.AGV_LENGTH;
       double d = DemoParameters.DIST_BETW_LANES;
-      this.logisticPositions = new LogisticPosition[0];
-/*      logisticPositions[ 0] = new LogisticPosition("Park", new XYASpace(d      , 3*d-l/2, Math.PI/2), this, semEndPark[0][0], new int[] {0,0});
-      logisticPositions[ 1] = new LogisticPosition("Park", new XYASpace(2*d    , 3*d-l/2, Math.PI/2), this, semEndPark[0][1], new int[] {0,1});
-      logisticPositions[ 2] = new LogisticPosition("Park", new XYASpace(3*d-l/2, 2*d    , 0        ), this, semEndPark[1][0], new int[] {1,0});
-      logisticPositions[ 3] = new LogisticPosition("Park", new XYASpace(3*d-l/2, d      , 0        ), this, semEndPark[1][1], new int[] {1,1});
-      logisticPositions[ 4] = new LogisticPosition("Park", new XYASpace(2*d    , l/2    , Math.PI/2), this, semEndPark[2][0], new int[] {2,0});
-      logisticPositions[ 5] = new LogisticPosition("Park", new XYASpace(d      , l/2    , Math.PI/2), this, semEndPark[2][1], new int[] {2,1});
-      logisticPositions[ 6] = new LogisticPosition("Park", new XYASpace(l/2    , d      , 0        ), this, semEndPark[3][0], new int[] {3,0});
-      logisticPositions[ 7] = new LogisticPosition("Park", new XYASpace(l/2    , 2*d    , 0        ), this, semEndPark[3][1], new int[] {3,1});
-/*      logisticPositions[ 8] = new LogisticPosition("CntrPark_0", new XYASpace(1.5*d  , 2*d    , 0        ), this, semCntrPark[0]);
-      logisticPositions[ 9] = new LogisticPosition("CntrPark_1", new XYASpace(2*d    , 1.5*d  , Math.PI/2), this, semCntrPark[1]);
-      logisticPositions[10] = new LogisticPosition("CntrPark_2", new XYASpace(1.5*d  , d      , 0        ), this, semCntrPark[2]);
-      logisticPositions[11] = new LogisticPosition("CntrPark_3", new XYASpace(d      , 1.5*d  , Math.PI/2), this, semCntrPark[3]);*/
+      this.logisticPositions = new LogisticPosition[8];
+      logisticPositions[ 0] = new LogisticPosition("Park_00", new XYASpace(d      , 3*d-l/2, Math.PI/2), this, semEndPark[0][0], new int[] {0,0});
+      logisticPositions[ 1] = new LogisticPosition("Park_01", new XYASpace(2*d    , 3*d-l/2, Math.PI/2), this, semEndPark[0][1], new int[] {0,1});
+      logisticPositions[ 2] = new LogisticPosition("Park_10", new XYASpace(3*d-l/2, 2*d    , 0        ), this, semEndPark[1][0], new int[] {1,0});
+      logisticPositions[ 3] = new LogisticPosition("Park_11", new XYASpace(3*d-l/2, d      , 0        ), this, semEndPark[1][1], new int[] {1,1});
+      logisticPositions[ 4] = new LogisticPosition("Park_20", new XYASpace(2*d    , l/2    , Math.PI/2), this, semEndPark[2][0], new int[] {2,0});
+      logisticPositions[ 5] = new LogisticPosition("Park_21", new XYASpace(d      , l/2    , Math.PI/2), this, semEndPark[2][1], new int[] {2,1});
+      logisticPositions[ 6] = new LogisticPosition("Park_30", new XYASpace(l/2    , d      , 0        ), this, semEndPark[3][0], new int[] {3,0});
+      logisticPositions[ 7] = new LogisticPosition("Park_31", new XYASpace(l/2    , 2*d    , 0        ), this, semEndPark[3][1], new int[] {3,1});
+//      logisticPositions[ 8] = new LogisticPosition("CntrPark_0", new XYASpace(1.5*d  , 2*d    , 0        ), this, semCntrPark[0]);
+//      logisticPositions[ 9] = new LogisticPosition("CntrPark_1", new XYASpace(2*d    , 1.5*d  , Math.PI/2), this, semCntrPark[1]);
+//      logisticPositions[10] = new LogisticPosition("CntrPark_2", new XYASpace(1.5*d  , d      , 0        ), this, semCntrPark[2]);
+//      logisticPositions[11] = new LogisticPosition("CntrPark_3", new XYASpace(d      , 1.5*d  , Math.PI/2), this, semCntrPark[3]);
       for (int i = 0; i < logisticPositions.length; i++) {
         logisticPositions[i].location = transform.transform(logisticPositions[i].location);
       }
