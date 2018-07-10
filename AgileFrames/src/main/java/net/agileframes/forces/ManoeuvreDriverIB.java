@@ -91,6 +91,7 @@ public abstract class ManoeuvreDriverIB implements ManoeuvreDriver, Runnable {
    * @see MachineIB#start()
    */
   public void run() {
+	if (DEBUG) { System.out.println("*D* ManoeuvreDriverIB: run"); }
     try { Thread.currentThread().setPriority(Thread.MAX_PRIORITY); }
     catch (Exception e) { e.printStackTrace(); }
     while (active){ cycle(); }
@@ -103,7 +104,7 @@ public abstract class ManoeuvreDriverIB implements ManoeuvreDriver, Runnable {
    * @see #run()
    */
   protected void cycle() {
-	  
+	
     try {
       if (System.in.available() > 0) {
         char c = (char)System.in.read();

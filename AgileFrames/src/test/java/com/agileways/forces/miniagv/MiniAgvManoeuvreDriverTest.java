@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 
 import org.junit.Test;
 
+import junit.framework.TestCase;
+import net.agileframes.core.forces.Flag;
 import net.agileframes.core.forces.FuSpace;
 import net.agileframes.core.forces.FuTransform;
 import net.agileframes.core.forces.Manoeuvre;
@@ -33,56 +35,38 @@ public class MiniAgvManoeuvreDriverTest {
 		FuSpace p = new XYASpace(10,10,0);
 		FuTransform t = XYATransform.IDENTITY;
 		
-		ServiceID actorID = AgileSystem.getServiceID();
-		ActorIB actor = new ActorIB(actorID, miniAgv4Test, "fuzz");
-		
-		
-		JoinMove aJoinMove = new JoinMove(t,p,0);
-		aJoinMove.setActor(actor);
-		
-		 {  // protected void sceneActionScript()
-		    try {
-		      // tickets[0].insist();
-		      double dev = Double.MAX_VALUE;
-		      do {
-		    	  System.out.println("JOINSA: mov0.run: before");
-		    	aJoinMove.run(new Ticket[] {} );
-		    	System.out.println("JOINSA: mov0.run: after");
-		        watch(aJoinMove.getSign(0));
-		        System.out.println("JOINSA: mov0.sign 0 received");
-		        dev = aJoinMove.getManoeuvre().getCalcDeviation();
-		        System.out.println("deviation = "+dev);
-		      } while (dev > 2);
-		    } catch (Exception e) {
-		      System.out.println("Exception in JoinSceneAction: The scene-action will be aborted.");
-		      e.printStackTrace();
-		    }
-		    // finish(tickets[0]);
-		    // signs[0].broadcast();
-		  }
-		
-		
-		//JoinManoeuvre m = new JoinManoeuvre(t, p, 0);
-		
-		//miniAgv4Test.begin(m);
-		Thread.sleep(1000*1000);
+		JoinManoeuvre manoeuvre = new JoinManoeuvre(t,p,0);
+		miniAgv4Test.begin(manoeuvre);
+
+		 { // public void moveScript()
+			try {
+				System.out.println("JOINMOVE: about to start exec: manoeuvre="+manoeuvre);
+				manoeuvre.startExecution();
+				System.out.println("JOINMOVE: about to watch flag="+manoeuvre.getFlag(0));
+				watch(manoeuvre.getFlag(0));
+				System.out.println("JOINMOVE: watched raised flag="+manoeuvre.getFlag(0));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		TestCase.assertTrue(manoeuvre.getFlag(0).isRaised()); 
 	}
 	
-	public void watch(Sign sign){ watch(new Sign[] {sign}); }
+	public void watch(Flag flag){ watch(new Flag[] {flag}); }
 	
-	public void watch(Sign[] signs) { // copied from SceneAction
-	    boolean broadcasted = false;
-	    for (int i = 0; i < signs.length; i++) {
-	      signs[i].addListener(this);
-	      if (!broadcasted) { broadcasted = signs[i].isBroadcasted();}
-	    }
-	    while (!broadcasted) {
+	protected synchronized void watch(Flag[] flags) {
+	    boolean raised = false;
+	    for (int i = 0; i < flags.length; i++) {
+	    	  flags[i].addListener(this);
+	      if (!raised) { raised = flags[i].isRaised();}
+	      }
+	    while (!raised) {
 	      try{ synchronized(this) { this.wait();  }  }
 	      catch (Exception e) {
-	        System.out.println("Exception in SceneAction.watch():"+e.getMessage());
+	        System.out.println("Exception in Move.watch():"+e.getMessage());
 	        e.printStackTrace();
 	      }
-	      for (int i = 0; i < signs.length; i++) { if (!broadcasted) { broadcasted = signs[i].isBroadcasted();} }
+	      for (int i = 0; i < flags.length; i++) { if (!raised) { raised = flags[i].isRaised();} }
 	    }
 	  }
 
