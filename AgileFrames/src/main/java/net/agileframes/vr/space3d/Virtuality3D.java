@@ -1,27 +1,46 @@
 package net.agileframes.vr.space3d;
-import javax.media.j3d.*;
-import java.awt.*;
-import com.sun.j3d.utils.universe.*;
-import com.sun.j3d.utils.behaviors.*;
-import javax.vecmath.*;
-import javax.swing.*;
-import com.sun.j3d.utils.geometry.ColorCube;
-import com.sun.j3d.utils.behaviors.keyboard.*;
-import com.sun.j3d.utils.behaviors.mouse.*;
-import java.rmi.server.UnicastRemoteObject;
-import net.jini.core.event.RemoteEventListener;
-import net.jini.core.event.RemoteEvent;
-import net.jini.core.lookup.ServiceTemplate;
-import net.jini.core.lookup.ServiceItem;
-import net.jini.core.lookup.ServiceID;
-import net.jini.core.entry.Entry;
-import net.jini.lookup.entry.Name;
+import java.awt.Font;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.rmi.RemoteException;
-import net.agileframes.server.AgileSystem;
+import java.rmi.server.UnicastRemoteObject;
+
+import javax.media.j3d.AmbientLight;
+import javax.media.j3d.BoundingSphere;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.Canvas3D;
+import javax.media.j3d.DirectionalLight;
+import javax.media.j3d.Font3D;
+import javax.media.j3d.FontExtrusion;
+import javax.media.j3d.GraphicsConfigTemplate3D;
+import javax.media.j3d.Light;
+import javax.media.j3d.Node;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.Text3D;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
+import javax.swing.JFrame;
+import javax.vecmath.Color3f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3d;
+
+import com.sun.j3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
+import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
+import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
+import com.sun.j3d.utils.behaviors.mouse.MouseZoom;
+import com.sun.j3d.utils.universe.SimpleUniverse;
+
 import net.agileframes.core.vr.AvatarFactory;
 import net.agileframes.core.vr.Body;
-import net.agileframes.core.vr.Avatar;
 import net.agileframes.core.vr.Virtuality;
+import net.agileframes.server.AgileSystem;
+import net.jini.core.entry.Entry;
+import net.jini.core.event.RemoteEvent;
+import net.jini.core.event.RemoteEventListener;
+import net.jini.core.lookup.ServiceItem;
+import net.jini.core.lookup.ServiceTemplate;
+import net.jini.lookup.entry.Name;
 /**
  * <b>Implementation of Virtuality in a 3D environment.</b>
  * <p>

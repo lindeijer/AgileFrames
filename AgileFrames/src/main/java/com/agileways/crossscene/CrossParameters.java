@@ -1,7 +1,6 @@
 package com.agileways.crossscene;
 
 import net.agileframes.forces.xyaspace.XYATransform;
-import com.agileways.forces.miniagv.MiniAgvConfig;
 
 public class CrossParameters {
   public static final double LAYOUT_SCALE = 1.25;//was: 0.8
@@ -22,7 +21,9 @@ public class CrossParameters {
   public static final double MAX_DECELERATION = 3.0;
   public static final double MAX_ACCELERATION = 3.0;
   public static final double MAX_DEVIATION = 0.5;
-  public static final double CYCLE_TIME = MiniAgvConfig.MAIN_CYCLE_TIME_S;   // in seconds
+  public static final double CYCLE_TIME = //0.20; 200 in case of Win98 && 50 on linux; // msec;   // in seconds
+		  0.050;// MiniAgvConfig.MAIN_CYCLE_TIME_S  
+  
 
   public static final XYATransform TRANSFORM = new XYATransform(0,0,0);
 
