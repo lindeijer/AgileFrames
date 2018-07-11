@@ -9,7 +9,7 @@ public class CreateMiniAgvMain {
 	
 	public static void main(String [] args) throws RemoteException {
 		System.setProperty("java.rmi.server.ignoreStubClasses","true");
-		System.setProperty("java.rmi.server.codebase","http://localhost:8087/agileways-1.0.1-SNAPSHOT.jar");
+		System.setProperty("java.rmi.server.codebase","http://localhost:8087/agileways-1.0.1-SNAPSHOT.jar http://localhost:8088/");
 		System.setProperty("agileframes.loginbase.hostname","localhost");
 		System.setProperty("agilesystem.quit","FALSE");
 		
@@ -18,6 +18,13 @@ public class CreateMiniAgvMain {
 		ServiceID serviceID = null;
 		MiniAgv.STATEFINDER_TYPE = MiniAgv.SIMULATED;
 		MiniAgv miniAgv = new MiniAgv(name, isAgileSystemMute, serviceID);
+		
+		
+		//
+		
+		
+		
+		
 	}
 	
 
