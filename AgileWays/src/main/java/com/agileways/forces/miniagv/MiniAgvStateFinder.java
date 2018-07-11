@@ -47,7 +47,7 @@ public class MiniAgvStateFinder extends StateFinderIB {
   //----------- Classes ---------------
   public class MiniAgvLocalInformation implements LocalInformation {
     //-- Attributes --
-    private FuSpace currentState = new XYASpace(0,0,0); // null?
+    private FuSpace currentState = new XYASpace(0,0,0); // the position upon creation.
     private FuSpace prevState = null;
     private long timeStamp, prevTimeStamp;
     private double dT = 0;

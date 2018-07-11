@@ -12,14 +12,17 @@ import net.jini.core.lookup.*;
 import net.jini.lookup.entry.Name;
 // net.agileframes
 import net.agileframes.core.traces.Actor;
+import net.agileframes.core.traces.NotTrustedException;
 import net.agileframes.core.forces.FuSpace;
 import net.agileframes.forces.MachineProxy;
 import net.agileframes.forces.TransformEntry;
 import net.agileframes.forces.MachineIB;
 import net.agileframes.core.forces.MachineRemote;
+import net.agileframes.core.services.Job;
 import net.agileframes.traces.ActorProxy;
 import net.agileframes.traces.ActorIB;
 import net.agileframes.server.AgileSystem;
+import net.agileframes.services.ActionJob;
 import net.agileframes.forces.mfd.*;
 import com.agileways.vr.agv.AgvAvatarFactory;
 import net.agileframes.core.vr.AvatarFactory;
@@ -133,6 +136,10 @@ public class MiniAgv extends MachineIB implements RemoteStateListener {
       machineProxy = null;
       actorProxy = null;
     }
+  }
+  
+  public void acceptJob(ActionJob anActionJob) throws RemoteException, NotTrustedException {
+	  actor.acceptJob(null, anActionJob);
   }
 
   //---------------- Main ------------------

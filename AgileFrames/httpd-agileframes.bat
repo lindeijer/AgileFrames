@@ -8,6 +8,6 @@ set JINI_HOME=C:\Users\Gebruiker\eclipse-workspace\2.2.3\
 set JINI_LIB=%JINI_HOME%lib\
 set HTTPD_PORT=8088
 
-set CMD="%JAVA_HOME%\bin\java.exe" -jar "%JINI_LIB%tools.jar" -port %HTTPD_PORT% -dir . -verbose
+set CMD="%JAVA_HOME%\bin\java.exe" -jar "%JINI_LIB%tools.jar" -port %HTTPD_PORT% -dir target/classes -verbose
 echo HTTP Daemon -- Start: %CMD%
 %CMD%

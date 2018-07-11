@@ -28,7 +28,16 @@ public class DemoSuperAction extends SceneAction {
     this.scene = scene;
     this.superSceneAction = superSceneAction;
 
-    this.tickets = new Ticket[0];
+    this.tickets = new Ticket[8];
+    tickets[0] = new PrimeTicket(this, DemoScene.semEndPark[0][0]);
+    tickets[1] = new PrimeTicket(this, DemoScene.semEndPark[0][1]);
+    tickets[2] = new PrimeTicket(this, DemoScene.semEndPark[1][0]);
+    tickets[3] = new PrimeTicket(this, DemoScene.semEndPark[1][1]);
+    tickets[4] = new PrimeTicket(this, DemoScene.semEndPark[2][0]);
+    tickets[5] = new PrimeTicket(this, DemoScene.semEndPark[2][1]);
+    tickets[6] = new PrimeTicket(this, DemoScene.semEndPark[3][0]);
+    tickets[7] = new PrimeTicket(this, DemoScene.semEndPark[3][1]);
+
 
 /*    if (DEBUG) System.out.println("*D* Initial Position: direct: "+currentDirect+", lane: "+currentLane);
     for (int i = 0; i < 4; i++) {
@@ -61,16 +70,20 @@ public class DemoSuperAction extends SceneAction {
   protected void sceneActionScript() {
     if (DEBUG) System.out.println("*D* DemoSuperAction: started!");
 
+    /*
     if ( (externalTickets == null ) || (externalTickets.length != 9) ) {
       System.out.println("DemoSuperAction was called incompletely");
       return;
     }
+    */
     Ticket exitTicketPrevious = externalTickets[0];
+    /*
     Ticket[] ticEndPark = new Ticket[8];
     for (int i = 0 ; i < 8; i++) {
       ticEndPark[i] = externalTickets[i+1];
     }
-
+    */
+    Ticket[] ticEndPark = tickets;
     // start-lane
     long startTime = System.currentTimeMillis();
     boolean goOn = true;
