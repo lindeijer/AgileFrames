@@ -28,7 +28,7 @@ public class JoinManoeuvre extends Manoeuvre {
   // nr = 0 -> from point p, distance m
   // nr = 1 -> to point p, distance m
   public JoinManoeuvre(FuTransform t, FuSpace p, int nr) {
-    super(t, 25, 5, 10, 0.5);
+    super(t, 1,1, 1, 1);
     //-- Defining Trajectory --
     FuTrajectory[] compTraj = new FuTrajectory[1];
 

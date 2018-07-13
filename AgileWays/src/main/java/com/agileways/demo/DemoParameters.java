@@ -22,7 +22,7 @@ public class DemoParameters {
    */
   public static double DIST_BETW_LANES = 40.0*scale;
 
-  public static double MAX_SPEED = 9.675;
+  public static double MAX_SPEED = 5.0;
   public static double MAX_DECEL = 5.0;
   public static double MAX_ACCEL = 2.0;
   public static double MAX_DEVI = 0.5;

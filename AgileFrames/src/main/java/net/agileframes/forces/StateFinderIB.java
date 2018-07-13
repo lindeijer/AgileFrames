@@ -57,7 +57,7 @@ public class StateFinderIB implements StateFinder {
 	}
 
 	/**
-	 * Updates the state by simply assuming that the machine follows the trajectoy
+	 * Updates the state by simply assuming that the machine follows the trajectory
 	 * precisely.
 	 * 
 	 * So, the observed evolution corresponds with the trajectories profile speed
@@ -83,7 +83,7 @@ public class StateFinderIB implements StateFinder {
 			observedEvolution = 0.0;
 		}
 		FuTrajectory aFuTrajectory = aManoeuvre.getTrajectory();
-		double prevSpeed_ms = aFuTrajectory.getProfileSpeed(prevCalcEvol);
+		double prevSpeed_ms = aFuTrajectory.getProfileSpeed(prevCalcEvol) * aManoeuvre.maxSpeed;
 		long dT_ms = physicalDriver.getCycleTime();
 		double dT_s = dT_ms / 1000.0;
 		double dEvolution_m = dT_s * prevSpeed_ms;

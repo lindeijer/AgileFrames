@@ -50,15 +50,15 @@ public class Manoeuvre implements Cloneable, Serializable {
   protected Precaution[] precautions;
 
   /** The maximal speed on this manoeuvre. To be defined in extension. */
-  protected double maxSpeed = Double.NaN;
+  public final double maxSpeed;
   /** The maximal deceleration on this manoeuvre. Always > 0. To be defined in extension. */
-  protected double maxDeceleration = Double.NaN;
+  public final double maxDeceleration;
   /** The maximal acceleration on this manoeuvre. Always > 0. To be defined in extension. */
-  protected double maxAcceleration = Double.NaN;
+  public final double maxAcceleration;
   /** The maximal deviation on this manoeuvre. To be defined in extension. */
-  protected double maxDeviation = Double.NaN;
+  public final double maxDeviation;
   /** The transform used to position this manoeuvre in the function space. To be defined in extension. */
-  protected FuTransform transform = null;
+  public final FuTransform transform;
   /** The cycle-time of the mfd-thread in seconds. Must be set in user-specific code, if not, this parameter has no value (Double.NaN). */
   public double cycleTime = Double.NaN;
 
