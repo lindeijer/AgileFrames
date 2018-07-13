@@ -65,10 +65,17 @@ public interface PhysicalDriver {
    */
   public double getInducedSpeed();
    /**
-   * Returns time of last update-cycle.<p>
+   * Returns start-time of last update-cycle.<p>
    * @return  the time in milliseconds
    */
   public long getTimeStamp();
+  
+  /**
+   * Returns duration of last update-cycle.<p>
+   * @return the duration in milliseconds
+   */
+  public long getCycleTime();
+  
   /**
    * <b>Interface for specific data-objects containing machine-settings.</b>
    * <p>

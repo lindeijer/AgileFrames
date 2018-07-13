@@ -14,7 +14,7 @@ import net.agileframes.server.AgileSystem;
  * @author  H.J. Wierenga
  * @version 0.1
  */
-public abstract class ManoeuvreDriverIB implements ManoeuvreDriver, Runnable {
+public class ManoeuvreDriverIB implements ManoeuvreDriver, Runnable {
   //---------------------- Attributes --------------------
   protected Manoeuvre manoeuvre = null;
   protected Manoeuvre nextManoeuvre = null;
@@ -127,7 +127,6 @@ public abstract class ManoeuvreDriverIB implements ManoeuvreDriver, Runnable {
     synchronized (this) {
       stateFinder.update(manoeuvre.getCalcEvolution());
       manoeuvre.updateCalculatedState(stateFinder.getObservedState(), stateFinder.getObservedEvolution(), nextManoeuvre);
-
       pilotCourse = manoeuvre.getPilotCourse();
       refAcceleration = manoeuvre.getReferenceAcceleration();
       instructor.update();

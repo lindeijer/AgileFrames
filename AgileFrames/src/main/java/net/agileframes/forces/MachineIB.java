@@ -79,7 +79,9 @@ public class MachineIB extends ServerIB implements MachineRemote {
   //------------------------------ Methods inherited from Body ------------------------------------
   public void addAvatar(Avatar avatar) throws RemoteException {}
   public void removeAvatar(Avatar avatar) throws RemoteException {}
-  public FuSpace getState() throws RemoteException { return null; }// must be overloaded to let the avatar work
+  public FuSpace getState() throws RemoteException { 
+	  return stateFinder.getObservedState();
+  }
   public int getGeometryID() throws RemoteException { return 0; }
   public int getAppearanceID() throws RemoteException { return 0; }
   public FuSpace removeChild(BodyRemote child) throws RemoteException { return null; }

@@ -216,6 +216,11 @@ public class MiniAgvPhysicalDriver extends PhysicalDriverIB {
   public void setNewObservationReceived(boolean isReceived) {
     newObservationReceived = isReceived;
   }
+  
+  public long getCycleTime() {
+	// computed in update. 
+	return 0;
+  }
 
 
   //------------------------- Class ------------------------------------
@@ -249,4 +254,5 @@ public class MiniAgvPhysicalDriver extends PhysicalDriverIB {
       return "servoA = "+servoA+"; servoB = "+servoB+"; motorA = "+motorA+"; motorB = "+motorB;
     }
   }
+
 }

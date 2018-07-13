@@ -289,7 +289,8 @@ public class Manoeuvre implements Cloneable, Serializable {
   //------------------- Getters and Setters ------------------------
   /**
    * Returns the calculated evolution.
-   * The evolution is calculated in {@link #updateCalculatedState(FuSpace,double,Manoeuvre)  updateCalculatedState}
+   * The evolution is calculated in {@link #updateCalculatedState(FuSpace,double,Manoeuvre)  updateCalculatedState}.
+   * In general, this is the projection of the observed evolution onto the trajectory.
    * @return the latest calculated evolution
    */
   public double getCalcEvolution() { return calcEvolution; }

@@ -24,10 +24,6 @@ public class CreateMiniAgvMain {
 		String scenaActioName = "DemoSuperAction";
 		ActionJob anActionJob = new ActionJob(scenaActioName);
 		miniAgv.acceptJob(anActionJob);
-		
-		
-		
-		
 	}
 	
 

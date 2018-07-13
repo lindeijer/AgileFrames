@@ -97,6 +97,7 @@ public class ActorIB extends ServerIB implements Actor, Runnable {
         /** TEMP - HW**/
         FuSpace p = machine.getState();
         while (p==null) {
+          System.out.println("ActorIB.downloadScene: waiting for the machine's position.");
           synchronized(this) { this.wait(1000); }
           p = machine.getState();
         }//wait for the machine to be seen by the camera

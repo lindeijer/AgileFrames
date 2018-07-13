@@ -17,6 +17,7 @@ public class MiniAgvStateFinder extends StateFinderIB {
   //----------- Constructor -----------
   //BE SURE that initialize is called after creation!!
   public MiniAgvStateFinder(int AGV_TYPE) {
+	super(null);
     this.TYPE = AGV_TYPE;
     // should be:
     // this.TYPE = MiniAgv.STATEFINDER_TYPE;
