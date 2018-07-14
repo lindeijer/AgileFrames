@@ -27,4 +27,18 @@ package net.agileframes.core.traces;
  */
 
 public interface Action {
+	
+	public Object clone(Actor actor) throws CloneNotSupportedException;
+	
+	public void setActor(Actor actor);
+	
+	public void execute();
+	
+	public Ticket getExitTicket();
+	
+	public void setBeginPosition(LogisticPosition beginPosition);
+	
+	public Scene getScene();
+	
+	public void execute(Ticket[] externalTickets);
 }

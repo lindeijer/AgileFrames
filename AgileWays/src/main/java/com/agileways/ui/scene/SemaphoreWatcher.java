@@ -68,7 +68,7 @@ public class SemaphoreWatcher {
         semViewers[i] = new SemaphoreViewer(semaphores[i], props[i], frame);
         //System.out.println(i+"  "+semaphores[i].toString()+"  = "+semaphores[i].getName());
         SemaphoreViewerProxy svp = new SemaphoreViewerProxy(semViewers[i]);
-        semaphores[i].setViewer(svp);
+        ((Semaphore)semaphores[i]).setViewer(svp);
       }
       //System.out.println("width="+props[semaphores.length].width+"  height="+props[semaphores.length].height);
       frame.w = props[semaphores.length].width;
@@ -142,7 +142,7 @@ public class SemaphoreWatcher {
       for (int i = 0; i < semaphores.length; i++) {
         semViewers[i] = new SemaphoreViewer(semaphores[i], props[i], frame);
         SemaphoreViewerProxy svp = new SemaphoreViewerProxy(semViewers[i]);
-        semaphores[i].setViewer(svp);
+        ((Semaphore)semaphores[i]).setViewer(svp);
       }
       frame.w = props[semaphores.length].width;
       frame.h = props[semaphores.length].height;//+30

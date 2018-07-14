@@ -6,7 +6,6 @@ import net.agileframes.core.forces.Move;
 import net.agileframes.core.traces.*;
 import net.agileframes.traces.ticket.PrimeTicket;
 import net.agileframes.core.forces.Sign;
-import net.agileframes.core.traces.LogisticPosition;
 import net.agileframes.traces.ticket.SelectTicket;
 
 import com.agileways.demo.DemoScene;
@@ -69,14 +68,14 @@ public class DemoCarParkSuperAction extends SceneAction {
       while (sa == null) {
         try {
           if (demoScene == null) {
-            sa = carParkScene.getSceneAction("CarParkSuperAction",actor);
+            sa = (SceneAction)carParkScene.getSceneAction("CarParkSuperAction",actor);
             System.out.println("DemoScene is not available.");
             System.out.println("Only CarParkScene will be used.");
             saTickets = new Ticket[] {exitTicketPrevious, ticCrossing[1][0], ticCrossing[1][1]};
             beginPosition = new LogisticPosition("Entrance", carParkScene, new int[] {0});
           }
           if (carParkScene == null) {
-            sa = demoScene.getSceneAction("DemoSuperAction",actor);
+            sa = (SceneAction)demoScene.getSceneAction("DemoSuperAction",actor);
             System.out.println("CarParkScene is not available.");
             System.out.println("Only DemoScene will be used.");
             saTickets = new Ticket[9];
@@ -116,14 +115,14 @@ public class DemoCarParkSuperAction extends SceneAction {
           if (endPosition.scene.equals(demoScene)) {
             //[scene=demo]
             if (endPosition.params[0] == 1) {
-              sa = carParkScene.getSceneAction("ParkInAction_"+endPosition.params[1], actor);
+              sa = (SceneAction)carParkScene.getSceneAction("ParkInAction_"+endPosition.params[1], actor);
               this.ticSuperDemo.free();
               //we want to park ((1))
               beginPosition = new LogisticPosition("Entrance", carParkScene, new int[] {endPosition.params[1]} );
               saTickets = new Ticket[] {exitTicketPrevious};
             } else {
               //we probably just started up: continue driving in demo ((*))
-              sa = demoScene.getSceneAction("DemoSuperAction", actor);
+              sa = (SceneAction)demoScene.getSceneAction("DemoSuperAction", actor);
               beginPosition = endPosition;//beginPosition next action is same as endPosition last one
               saTickets = new Ticket[9];
               saTickets[0] = exitTicketPrevious;
@@ -137,7 +136,7 @@ public class DemoCarParkSuperAction extends SceneAction {
             //[scene=carpark]
             if (endPosition.params.length == 1) {
               //we are at entrance: want to demo ((3))
-              sa = demoScene.getSceneAction("DemoSuperAction", actor);
+              sa = (SceneAction)demoScene.getSceneAction("DemoSuperAction", actor);
               beginPosition = new LogisticPosition("Park", demoScene, new int[] {1, endPosition.params[0]} );
               saTickets = new Ticket[9];
               saTickets[0] = exitTicketPrevious;
@@ -149,7 +148,7 @@ public class DemoCarParkSuperAction extends SceneAction {
             } else {
               //we are at park: want to parkout ((2))
               // first wait until there's room for us
-              sa = carParkScene.getSceneAction("ParkOutAction_"+endPosition.params[0]+"."+endPosition.params[1], actor);
+              sa = (SceneAction)carParkScene.getSceneAction("ParkOutAction_"+endPosition.params[0]+"."+endPosition.params[1], actor);
               this.ticSuperDemo.insist();
               beginPosition = endPosition;//beginPosition next action is same as endPosition last one
               saTickets = new Ticket[] {exitTicketPrevious, ticCrossing[1][0], ticCrossing[1][1]};
@@ -157,7 +156,7 @@ public class DemoCarParkSuperAction extends SceneAction {
           } else if (endPosition.scene.equals(scene)) {
             //[scene=super]
             //we probably just started up: park in ((*))
-            sa = carParkScene.getSceneAction("ParkInAction_"+endPosition.params[1], actor);
+            sa = (SceneAction)carParkScene.getSceneAction("ParkInAction_"+endPosition.params[1], actor);
             beginPosition = new LogisticPosition("Entrance", carParkScene, new int[] {1, endPosition.params[1]} );
             saTickets = new Ticket[] {exitTicketPrevious};
           } else {

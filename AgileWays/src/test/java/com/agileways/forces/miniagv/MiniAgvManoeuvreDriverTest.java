@@ -14,13 +14,11 @@ import net.agileframes.core.forces.Sign;
 import net.agileframes.core.traces.LogisticPosition;
 import net.agileframes.core.traces.Ticket;
 import net.agileframes.forces.JoinManoeuvre;
-import net.agileframes.forces.JoinMove;
 import net.agileframes.forces.MachineIB;
 import net.agileframes.forces.xyaspace.XYASpace;
 import net.agileframes.forces.xyaspace.XYATransform;
 import net.agileframes.server.AgileSystem;
 import net.agileframes.traces.ActorIB;
-import net.agileframes.traces.JoinSceneAction;
 import net.jini.core.lookup.ServiceID;
 
 public class MiniAgvManoeuvreDriverTest {

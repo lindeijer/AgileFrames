@@ -77,7 +77,7 @@ public interface Scene extends Server, BodyRemote {
    * @param   actor the actor that asks for the <code>SceneAction</code>
    * @return  the requested <code>SceneAction</code>
    */
-  public SceneAction getSceneAction(String name, Actor actor) throws java.rmi.RemoteException;
+  public Action getSceneAction(String name, Actor actor) throws java.rmi.RemoteException;
   /**
    * Destroys a specific <code>SceneAction</code>.<p>
    * Normally this method is called when the actor-process died or is stopped
@@ -192,5 +192,5 @@ public interface Scene extends Server, BodyRemote {
    * @param lp      the position to which the actor wants to go
    * @return  the requested Join-SceneAction
    */
-  public SceneAction join(Actor actor, LogisticPosition lp) throws java.rmi.RemoteException;
+  public Action join(Actor actor, LogisticPosition lp) throws java.rmi.RemoteException;
 }

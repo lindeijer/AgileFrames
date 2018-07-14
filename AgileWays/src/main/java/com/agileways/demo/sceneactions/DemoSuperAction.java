@@ -6,8 +6,6 @@ import net.agileframes.core.traces.*;
 import net.agileframes.traces.ticket.PrimeTicket;
 import net.agileframes.core.forces.Sign;
 
-import net.agileframes.core.traces.LogisticPosition;
-
 /**
  * DemoSuperAction is made without any constructor-parameters, but the initial position
  * should be set using setBeginPosition
@@ -166,39 +164,39 @@ public class DemoSuperAction extends SceneAction {
         try {
           switch (r) {
             case 1:
-              sa = scene.getSceneAction("DemoAction1_"+currentDirect+"."+currentLane, actor);
+              sa = (SceneAction)scene.getSceneAction("DemoAction1_"+currentDirect+"."+currentLane, actor);
               // direct stays same, lane changes
               currentLane = (currentLane + 1) % 2;
               break;
             case 2:
-              sa = scene.getSceneAction("DemoAction2_"+currentDirect+"."+currentLane, actor);
+              sa = (SceneAction)scene.getSceneAction("DemoAction2_"+currentDirect+"."+currentLane, actor);
               // lane stays same, direct changes
               currentDirect = (currentDirect + 1 + 2 * currentLane) % 4;
               break;
             case 3:
-              sa = scene.getSceneAction("DemoAction3_"+currentDirect+"."+currentLane, actor);
+              sa = (SceneAction)scene.getSceneAction("DemoAction3_"+currentDirect+"."+currentLane, actor);
               // direct and lane change
               currentDirect = (currentDirect + 1 + 2 * currentLane) % 4;
               currentLane = (currentLane + 1) % 2;
               break;
             case 4:
-              sa = scene.getSceneAction("DemoAction4_"+currentDirect+"."+currentLane, actor);
+              sa = (SceneAction)scene.getSceneAction("DemoAction4_"+currentDirect+"."+currentLane, actor);
               // lane stays same, direct changes
               currentDirect = (currentDirect + 2) % 4;
               break;
             case 5:
-              sa = scene.getSceneAction("DemoAction5_"+currentDirect+"."+currentLane, actor);
+              sa = (SceneAction)scene.getSceneAction("DemoAction5_"+currentDirect+"."+currentLane, actor);
               // direct and lane change
               currentDirect = (currentDirect + 2) % 4;
               currentLane = (currentLane + 1) % 2;
               break;
             case 6:
-              sa = scene.getSceneAction("DemoAction6_"+currentDirect+"."+currentLane, actor);
+              sa = (SceneAction)scene.getSceneAction("DemoAction6_"+currentDirect+"."+currentLane, actor);
               // direct changes, lane not
               currentDirect = (currentDirect + 3 - currentLane * 2) % 4;
               break;
             case 7:
-              sa = scene.getSceneAction("DemoAction7_"+currentDirect+"."+currentLane, actor);
+              sa = (SceneAction)scene.getSceneAction("DemoAction7_"+currentDirect+"."+currentLane, actor);
               // direct and lane change
               currentDirect = (currentDirect + 3 - currentLane * 2) % 4;
               currentLane = (currentLane + 1) % 2;

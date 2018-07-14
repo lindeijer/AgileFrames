@@ -1,13 +1,11 @@
 package net.agileframes.core.traces;
 
-import net.agileframes.core.server.Service;
-import net.agileframes.core.server.Server;
-import net.jini.core.lookup.ServiceID;
-import net.agileframes.core.services.Job;
-import net.agileframes.core.forces.Manoeuvre;
-import net.agileframes.core.forces.MachineRemote;
 import java.rmi.RemoteException;
-import java.rmi.Remote;
+
+import net.agileframes.core.forces.MachineRemote;
+import net.agileframes.core.server.Server;
+import net.agileframes.core.services.Job;
+import net.jini.core.lookup.ServiceID;
 
 /**
  * <b>Interface for the (remote) Actor.</b>

@@ -1,7 +1,7 @@
 package net.agileframes.services;
-import net.agileframes.core.services.Job;
-import net.agileframes.core.traces.SceneAction;
 import java.io.Serializable;
+
+import net.agileframes.core.services.Job;
 /**
  * <b>Most basic possible implementation of a Job.</b>
  * <p>

@@ -29,4 +29,9 @@ public class AgvAvatarFactory extends AvatarFactory {
     avatar.setText(text);
     return avatar;
   }
+
+	@Override
+	public Avatar getAvatar(Class virtualityType, Body body) {
+		return getAvatar3D(body);
+	}
 }

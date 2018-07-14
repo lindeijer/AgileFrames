@@ -68,7 +68,7 @@ public class CarParkSuperAction extends SceneAction {
 
     while (true) {
       SceneAction sa = null;
-      try { sa = scene.getSceneAction("ParkInAction_"+currentEntrance, actor); }
+      try { sa = (SceneAction)scene.getSceneAction("ParkInAction_"+currentEntrance, actor); }
       catch (Exception e) { e.printStackTrace(); }
 
       sa.setActor(actor);
@@ -85,7 +85,7 @@ public class CarParkSuperAction extends SceneAction {
       currentParkLane = endPosition.params[1];
       currentEntrance = -1;
 
-      try { sa = scene.getSceneAction("ParkOutAction_"+currentParkSide+"."+currentParkLane, actor); }
+      try { sa = (SceneAction)scene.getSceneAction("ParkOutAction_"+currentParkSide+"."+currentParkLane, actor); }
       catch (Exception e) { e.printStackTrace(); }
 
       sa.setActor(actor);

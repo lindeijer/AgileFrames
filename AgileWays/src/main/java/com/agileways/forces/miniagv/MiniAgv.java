@@ -26,7 +26,6 @@ import net.agileframes.services.ActionJob;
 import net.agileframes.forces.mfd.*;
 import com.agileways.vr.agv.AgvAvatarFactory;
 import net.agileframes.core.vr.AvatarFactory;
-import net.agileframes.core.vr.SceneAvatarFactory;
 
 import com.agileways.miniworld.lps.RemoteStateListener;
 import com.agileways.miniworld.lps.RemoteDistributor;
