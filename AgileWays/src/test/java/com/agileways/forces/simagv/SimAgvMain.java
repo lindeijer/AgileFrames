@@ -11,7 +11,7 @@ public class SimAgvMain {
 	
 	public static void main(String[] args) throws RemoteException, NotTrustedException {
 		System.setProperty("java.rmi.server.ignoreStubClasses","true");
-		String version = "1.0.2";
+		String version = "1.0.3-SNAPSHOT";
 		String codeBaseAgileFramesCore = " http://localhost:5001/agileframes-core-"+version+".jar";
 		String codeBaseAgileFramesFoRcEs = " http://localhost:5002/agileframes-forces-"+version+".jar";
 		String codeBaseAgileFramesTrAcEs = " http://localhost:5003/agileframes-traces-"+version+".jar";
