@@ -1,3 +1,1 @@
 # AgileFrames
-
-JumboTernimal ... run JumboSimulationMainTest.
