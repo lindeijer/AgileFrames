@@ -12,7 +12,7 @@ public class CreateMiniAgvMain {
 	
 	public static void main(String [] args) throws RemoteException, InterruptedException, NotTrustedException {
 		System.setProperty("java.rmi.server.ignoreStubClasses","true");
-		System.setProperty("java.rmi.server.codebase","http://localhost:8087/agileways-1.0.1-SNAPSHOT.jar http://localhost:8088/");
+		System.setProperty("java.rmi.server.codebase","http://localhost:8087/agileways-1.0.1.jar http://localhost:8088/");
 		System.setProperty("agileframes.loginbase.hostname","localhost");
 		System.setProperty("agilesystem.quit","FALSE");
 		
