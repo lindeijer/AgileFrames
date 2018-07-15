@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>net.agileframes</groupId>
 		<artifactId>agileframes-parent</artifactId>
-		<version>1.0.2-SNAPSHOT</version>
+		<version>1.0.2</version>
 	</parent>
 
 	<artifactId>agileframes-core</artifactId>
