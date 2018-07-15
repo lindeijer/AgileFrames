@@ -5,7 +5,7 @@
 
 	<groupId>net.agileframes</groupId>
 	<artifactId>agileframes-release</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
 
 	<name>agileframes</name>
 	<description>AgileFrames releae</description>
