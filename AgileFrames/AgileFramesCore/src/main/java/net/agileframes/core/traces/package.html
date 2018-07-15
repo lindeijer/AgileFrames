@@ -1,0 +1,96 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.77 [en] (WinNT; U) [Netscape]">
+</head>
+<body>
+Contains the core classes of the <i>TRACES</i>-layer of AgileFrames.
+<p><b>What is <i>TRACES</i>?</b>
+<br><i>TRACES</i> stands for <i>Agile <u>Tra</u>ffic <u>C</u>ontrol and
+<u>E</u>ngineering <u>S</u>ystem</i>. This is the conflict-handling layer,
+the layer that, amongst other things, must prevent collisions. It deals
+with the conflicting use of shared facilities, such as traffic infrastructure.
+<i>TRACES</i> is a generic system for agile high-performance traffic control.
+It is designed to meet the agility requirements and to handle high traffic
+intensities at any scale. It defines an event-oriented control programming
+language that is grafted onto Java and is equipped with all facilities
+to control concurrent use of shared resources
+<p><b>The set-up of <i>TRACES</i></b>
+<br>From the functional viewpoint, <i>TRACES</i> offers two programming
+languages. One to specify software models of traffic infrastructures and
+the related control on the use of communal facilities, and the other to
+specify the use of these traffic infrastructures, where the system takes
+care of the synchronisation between the abstract and real ‘moves’.
+<br>In <i>TRACES</i>, traffic-control completely takes place within a computer
+model where, within some margin, synchronisation is preserved between the
+progress of the real processes - i.e. the moves of the vehicles - and the
+evolution of the state of the computer model. Since physical reality and
+its representation as computer model are different worlds, the terminology
+in <i>TRACES</i> is kept abstract.
+<p><b>Terminology used in <i>TRACES</i></b>
+<table BORDER CELLSPACING=0 CELLPADDING=0 COLS=2 WIDTH="80%" >
+<tr BGCOLOR="#C0C0C0">
+<td><b><i>Traffic reality&nbsp;</i></b></td>
+
+<td><b><i>TRACES&nbsp;</i></b></td>
+</tr>
+
+<tr>
+<td>traffic (sub-)infrastructure</td>
+
+<td>(sub-)scene</td>
+</tr>
+
+<tr>
+<td>access controller</td>
+
+<td>semaphore</td>
+</tr>
+
+<tr>
+<td>request for access on protected area</td>
+
+<td>claim on a semaphore via ticket</td>
+</tr>
+
+<tr>
+<td>control interface for a machine action (i.e. vehicle manoeuvre)</td>
+
+<td>move</td>
+</tr>
+
+<tr>
+<td>departure from a protected area</td>
+
+<td>free-operation on a ticket</td>
+</tr>
+
+<tr>
+<td>message</td>
+
+<td>letter or signal</td>
+</tr>
+
+<tr>
+<td>machine (for example a vehicle)</td>
+
+<td>actor</td>
+</tr>
+
+<tr>
+<td>description of action in terms of scene elements</td>
+
+<td>sceneAction, or letterly, action</td>
+</tr>
+
+<tr>
+<td>formal description of the handlings in move or sceneAction&nbsp;</td>
+
+<td>script</td>
+</tr>
+</table>
+
+<br>&nbsp;
+</body>
+</html>

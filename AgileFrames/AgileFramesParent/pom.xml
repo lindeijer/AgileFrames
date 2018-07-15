@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>net.agileframes</groupId>
+	<artifactId>agileframes-parent</artifactId>
+	<version>1.0.3-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>AgileFrames Parent</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jsk.version>2.2.2</jsk.version>
+		<j3d.version>1.3.1</j3d.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>net.jini</groupId>
+				<artifactId>jsk-platform</artifactId>
+				<version>${jsk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.jini</groupId>
+				<artifactId>jsk-dl</artifactId>
+				<version>${jsk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.jini</groupId>
+				<artifactId>jsk-lib</artifactId>
+				<version>${jsk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.jini</groupId>
+				<artifactId>jsk-resources</artifactId>
+				<version>${jsk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.jini</groupId>
+				<artifactId>jsk-policy</artifactId>
+				<version>${jsk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.river</groupId>
+				<artifactId>reggie</artifactId>
+				<version>${jsk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.river</groupId>
+				<artifactId>reggie-dl</artifactId>
+				<version>${jsk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.river</groupId>
+				<artifactId>outrigger-dl</artifactId>
+				<version>${jsk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.river</groupId>
+				<artifactId>start</artifactId>
+				<version>${jsk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.river</groupId>
+				<artifactId>tools</artifactId>
+				<version>${jsk.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.objectspace</groupId>
+				<artifactId>jgl</artifactId>
+				<version>3.1.0</version>
+			</dependency>
+
+			<!-- java 3d runtime -->
+			<dependency>
+				<groupId>java3d</groupId>
+				<artifactId>vecmath</artifactId>
+				<version>${j3d.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>java3d</groupId>
+				<artifactId>j3d-core</artifactId>
+				<version>${j3d.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>java3d</groupId>
+				<artifactId>j3d-core-utils</artifactId>
+				<version>${j3d.version}</version>
+			</dependency>
+
+			<!-- scope=test -->
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+</project>
