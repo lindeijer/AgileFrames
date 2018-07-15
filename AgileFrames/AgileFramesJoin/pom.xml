@@ -26,10 +26,16 @@
 			<artifactId>agileframes-forces</artifactId>
 			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.agileframes</groupId>
 			<artifactId>agileframes-traces</artifactId>
+			<version>1.0.2-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.agileframes</groupId>
+			<artifactId>agileframes-vr</artifactId>
 			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
 

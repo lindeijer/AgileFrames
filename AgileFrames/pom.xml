@@ -6,9 +6,17 @@
 	<groupId>net.agileframes</groupId>
 	<artifactId>agileframes-release</artifactId>
 	<version>1.0.2-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-	<name>agileframes</name>
-	<description>AgileFrames releae</description>
+	<name>AgileFrames Release</name>
 
+	<modules>
+		<module>AgileFramesParent</module>
+		<module>AgileFramesCore</module>
+		<module>AgileFramesFoRcEs</module>
+		<module>AgileFramesTrAcEs</module>
+		<module>AgileFramesVirtualReality</module>
+		<module>AgileFramesJoin</module>
+	</modules>
 
 </project>

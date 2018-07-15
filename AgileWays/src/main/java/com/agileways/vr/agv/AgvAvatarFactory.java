@@ -1,14 +1,14 @@
 package com.agileways.vr.agv;
 
-import net.agileframes.core.vr.AvatarFactory;
 import com.agileways.vr.agv.AvatarAGV;
 import net.agileframes.core.vr.Body;
+import net.agileframes.vr.space3d.AvatarFactory3D;
 import net.agileframes.core.vr.Avatar;
 /**
  * Entry for an AGV
  */
 
-public class AgvAvatarFactory extends AvatarFactory {
+public class AgvAvatarFactory extends AvatarFactory3D {
   // only the public fields are available of an entry
   // and they must have an empty constructor
   // is this true? i wrote this after 3-4 months..

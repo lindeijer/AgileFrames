@@ -15,6 +15,8 @@
 
 	<dependencies>
 
+		<!-- AgileFrames dependencies -->
+
 		<dependency>
 			<groupId>net.agileframes</groupId>
 			<artifactId>agileframes-core</artifactId>
@@ -26,6 +28,14 @@
 			<artifactId>agileframes-forces</artifactId>
 			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
+
+		<dependency>
+			<groupId>net.agileframes</groupId>
+			<artifactId>agileframes-traces</artifactId>
+			<version>1.0.2-SNAPSHOT</version>
+		</dependency>
+
+		<!-- jini dependencies -->
 
 		<dependency>
 			<groupId>net.jini</groupId>

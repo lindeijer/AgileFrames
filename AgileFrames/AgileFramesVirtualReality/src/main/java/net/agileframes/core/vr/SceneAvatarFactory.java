@@ -1,5 +1,6 @@
 package net.agileframes.core.vr;
 
+import net.agileframes.vr.space3d.AvatarFactory3D;
 import net.agileframes.vr.space3d.SceneAvatar3D;
 
 /**
@@ -18,7 +19,7 @@ import net.agileframes.vr.space3d.SceneAvatar3D;
  * @author H.J. Wierenga, D.G. Lindeijer
  * @version 0.1
  */
-public class SceneAvatarFactory extends AvatarFactory {
+public class SceneAvatarFactory extends AvatarFactory3D {
 	/** Empty Constructor. Needed for every Entry. */
 	public SceneAvatarFactory() {
 	}

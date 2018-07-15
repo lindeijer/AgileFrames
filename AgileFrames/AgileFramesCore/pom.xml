@@ -11,7 +11,7 @@
 
 	<artifactId>agileframes-core</artifactId>
 
-	<description>AgileFrames Core</description>
+	<name>AgileFrames Core</name>
 
 	<dependencies>
 		<dependency>

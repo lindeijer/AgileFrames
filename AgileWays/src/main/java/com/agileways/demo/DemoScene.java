@@ -1,21 +1,17 @@
 package com.agileways.demo;
 
-import net.agileframes.traces.SceneIB;
-import net.agileframes.core.traces.Scene;
+import net.agileframes.traces.JoinScene;
 import net.agileframes.core.traces.SceneAction;
 import net.agileframes.core.traces.Semaphore;
 import net.agileframes.core.forces.Move;
 
 import com.agileways.demo.moves.*;
 import com.agileways.demo.sceneactions.*;
-import net.agileframes.core.traces.Actor;
 import net.agileframes.forces.xyaspace.XYATransform;
 import net.agileframes.forces.xyaspace.XYASpace;
 import net.agileframes.core.traces.LogisticPosition;
 
-/**/import java.io.*;
-
-public class DemoScene extends SceneIB {
+public class DemoScene extends JoinScene {
 /*DEPR*/  private static int MAX_AGVS_IN_SCENE = 2;
   //-------------------------- Semaphores --------------------------------
   public static Semaphore[][] semEndPark = new Semaphore[4][2];

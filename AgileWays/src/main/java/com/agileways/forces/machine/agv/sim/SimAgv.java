@@ -1,33 +1,19 @@
 package com.agileways.forces.machine.agv.sim;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-import com.agileways.forces.miniagv.MiniAgvInstructor;
-import com.agileways.forces.miniagv.MiniAgvManoeuvreDriver;
-import com.agileways.forces.miniagv.MiniAgvMechatronicsIB;
-import com.agileways.forces.miniagv.MiniAgvMechatronicsReal;
-import com.agileways.forces.miniagv.MiniAgvMechatronicsSimulated;
-import com.agileways.forces.miniagv.MiniAgvPhysicalDriver;
-import com.agileways.forces.miniagv.MiniAgvStateFinder;
 import com.agileways.vr.agv.AgvAvatarFactory;
 
-import net.agileframes.core.forces.FuSpace.FuPath;
 import net.agileframes.core.forces.MachineRemote;
 import net.agileframes.core.traces.Actor;
-import net.agileframes.forces.InstructorIB;
 import net.agileframes.forces.MachineIB;
 import net.agileframes.forces.MachineProxy;
 import net.agileframes.forces.ManoeuvreDriverIB;
-import net.agileframes.forces.Mechatronics;
 import net.agileframes.forces.PhysicalDriverIB;
 import net.agileframes.forces.StateFinderIB;
 import net.agileframes.forces.mfd.Instructor;
 import net.agileframes.forces.mfd.ManoeuvreDriver;
-import net.agileframes.forces.mfd.PhysicalDriver;
 import net.agileframes.forces.xyaspace.XYASpace;
 import net.agileframes.server.AgileSystem;
 import net.agileframes.traces.ActorIB;

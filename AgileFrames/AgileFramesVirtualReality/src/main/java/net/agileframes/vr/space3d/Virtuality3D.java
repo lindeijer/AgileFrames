@@ -306,7 +306,7 @@ public class Virtuality3D implements RemoteEventListener, Virtuality {
    * @param e the remote-event - not used.
    */
   public void notify(RemoteEvent e) {
-    System.out.println("*** Virtuality notified");
+    System.out.println("*** Virtuality notified: event="+e);
     ServiceItem[] serviceItems = AgileSystem.lookup(bodyTemplate, MAX_AVATARS);
     this.evaluateItems(serviceItems);
   }

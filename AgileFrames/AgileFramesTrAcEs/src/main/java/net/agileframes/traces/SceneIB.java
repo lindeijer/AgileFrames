@@ -165,7 +165,7 @@ public class SceneIB extends ServerIB implements Scene/* , Cloneable */ {
 	}
 	
 	public AvatarFactory getAvatarFactory() {
-		System.out.println("WARNING: should override and return a subclass of AvatarFactory (such as SceneAvatarFactory)");
+		System.out.println("WARNING: should override SceneIB.getAvatarFactory and return a subclass of AvatarFactory (such as SceneAvatarFactory)");
 		return new AvatarFactory() {
 			@Override
 			public Avatar getAvatar(Class virtualityType, Body body) {
@@ -187,6 +187,7 @@ public class SceneIB extends ServerIB implements Scene/* , Cloneable */ {
 	 * semaphores, scene-actions, logistic-positions and moves.
 	 */
 	public void initialize() throws java.rmi.RemoteException {
+		System.out.println("WARNING: should override SceneIB.initialize.");
 	}
 
 	////////////////////////////////////////////////////////////////////////////
@@ -308,7 +309,7 @@ public class SceneIB extends ServerIB implements Scene/* , Cloneable */ {
 	private SceneAction[] prevActions = new SceneAction[] {};
 
 	// action must be a cloned action, otherwise the actor is not set in its tickets
-	private synchronized void registerSA(Actor actor, Action clonedAction) {
+	protected synchronized void registerSA(Actor actor, Action clonedAction) {
 		// if the clonedAction has a non-null super-action, we have to clone that one as
 		// well
 		SceneAction thisAction = (SceneAction)clonedAction;
@@ -500,23 +501,8 @@ public class SceneIB extends ServerIB implements Scene/* , Cloneable */ {
 
 	// inherited from scene
 	public synchronized Action join(Actor actor, LogisticPosition lp) throws java.rmi.RemoteException {
-		System.out.println("Not overridden to return JoinSceneAction");
-		// return the sa to the requested lp
-		/*
-		System.out.println("SceneIB.join: actor="+actor+",lp="+lp);
-		FuSpace p = actor.getMachine().getState();
-		// create sa that claims right semaphore
-		Action sa = new JoinSceneAction(lp);
-		try {
-			sa = (SceneAction) sa.clone(actor);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		registerSA(actor, sa);
-		sa.setActor(actor);// this doesnt help, because this actor will be serialized!
-		return sa;
-		*/
-		return null;
+		System.out.println("WARNING: should override SceneIB.join (to return JoinSceneAction)");
+		return null; // should this return a do-nothing action?
 	}
 
 	// inherited from scene
